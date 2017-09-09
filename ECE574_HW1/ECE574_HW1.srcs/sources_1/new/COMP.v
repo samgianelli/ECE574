@@ -37,7 +37,7 @@ module COMP(a, b, gt, lt, eq);
             eq <= 1;
         end
         else begin
-            lt <= 0;
+            lt <= 1;
         end
     end   
 
