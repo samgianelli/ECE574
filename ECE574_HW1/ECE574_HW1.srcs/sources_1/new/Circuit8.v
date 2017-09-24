@@ -20,7 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Circuit8(a, b, c, zero, z);
+module Circuit8(a, b, c, clk, rst, zero, z);
+    input clk, rst;
+    
     input [63:0] a, b, c, zero;
     output [63:0] z;
     
