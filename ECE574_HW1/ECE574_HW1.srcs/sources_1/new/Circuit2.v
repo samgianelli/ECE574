@@ -51,9 +51,9 @@ module Circuit2(clk, rst, a, b, c, z, x);
     COMP #(32) comp_1 (
         .a(d), 
         .b(e), 
-        .gt(dEQe), 
+        .gt(), 
         .lt(), 
-        .eq()
+        .eq(dEQe)
     );
     
     COMP #(32) comp_2 (
