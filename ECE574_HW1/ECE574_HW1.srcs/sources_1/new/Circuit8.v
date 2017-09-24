@@ -49,7 +49,7 @@ module Circuit8(a, b, c, zero, z);
         .eq(gEQz)
     );
     
-    MUX #(64) mux_1 (
+    MUX2x1 #(64) mux_1 (
         .a(e),
         .b(f),
         .sel(gEQz),
@@ -60,7 +60,7 @@ module Circuit8(a, b, c, zero, z);
         .d(zwire),
         .Clk(clk),
         .Rst(rst),
-        q(z)
+        .q(z)
     );
     
 endmodule

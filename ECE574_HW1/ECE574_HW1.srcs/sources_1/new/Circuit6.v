@@ -48,7 +48,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t2)
     );
     
-    Reg #(16) reg_2 (
+    REG #(16) reg_2 (
         .d(t2),
         .Clk(clk),
         .Rst(rst),
@@ -61,7 +61,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t3)
     );
     
-    Reg #(16) reg_3 (
+    REG #(16) reg_3 (
         .d(t3),
         .Clk(clk),
         .Rst(rst),
@@ -74,7 +74,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t4)
     );
     
-    Reg #(16) reg_4 (
+    REG #(16) reg_4 (
         .d(t4),
         .Clk(clk),
         .Rst(rst),
@@ -87,7 +87,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t5)
     );
     
-    Reg #(16) reg_5 (
+    REG #(16) reg_5 (
         .d(t5),
         .Clk(clk),
         .Rst(rst),
@@ -100,7 +100,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t6)
     );
     
-    Reg #(16) reg_6 (
+    REG #(16) reg_6 (
         .d(t6),
         .Clk(clk),
         .Rst(rst),
@@ -113,7 +113,7 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .sum(t7)
     );
     
-    Reg #(16) reg_7 (
+    REG #(16) reg_7 (
         .d(t7),
         .Clk(clk),
         .Rst(rst),
@@ -126,15 +126,11 @@ module Circuit6(clk, rst, a, b, c, d, e, f, g, h, num, avg);
         .quot(avgwire)
     ); 
     
-    Reg #(16) reg_8 (
+    REG #(16) reg_8 (
         .d(avgwire),
         .Clk(clk),
         .Rst(rst),
         .q(avg)
     );
-    
-    
-    
-    
-    
+
 endmodule

@@ -52,7 +52,7 @@ module Circuit7(clk, rst, a, b, c, d, zero, z);
         .eq(gEQz)
     );
     
-    MUX #(64) mux_1 (
+    MUX2x1 #(64) mux_1 (
         .a(e),
         .b(f),
         .sel(gEQz),
