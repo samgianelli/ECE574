@@ -66,15 +66,15 @@ module Circuit5(clk, rst, a, b, c, z, x);
     );
     
     MUX2x1 #(64) mux_1 (
-        .a(e), 
-        .b(d), 
+        .a(d), 
+        .b(e), 
         .sel(dLTe), 
         .d(g)
     );
     
     MUX2x1 #(64) mux_2 (
-        .a(f), 
-        .b(g), 
+        .a(g), 
+        .b(f), 
         .sel(dEQe), 
         .d(h)
     );
