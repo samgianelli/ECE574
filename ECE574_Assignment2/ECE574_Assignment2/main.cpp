@@ -1,0 +1,44 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include "Parser.h"
+
+using namespace std;
+
+vector<string> readNetlist(string fileName);
+
+int main() //will add input arguments in at end of project
+{
+	int i = 0;
+	vector<string> netlistContents;
+	netlistContents = readNetlist("474a_circuit1.txt");
+
+	string testLine = netlistContents.at(5);
+	
+	for (i = 0; i < netlistContents.size(); i++)
+	{
+		Parser::parseLine(netlistContents.at(i));
+	}
+}
+
+vector<string> readNetlist(string fileName)
+{
+	string filePath = "../assignment 2 circuits/" + fileName;
+	ifstream netlistFile(filePath);
+	vector<string> netlistContents;
+	string line;
+
+	if (netlistFile.is_open() && netlistFile.good())
+	{
+		while (getline(netlistFile, line))
+		{
+			netlistContents.push_back(line);
+		}
+		netlistFile.close();
+	}
+
+	else cout << "Cannot open file: " << fileName << endl;
+
+	return netlistContents;
+}
