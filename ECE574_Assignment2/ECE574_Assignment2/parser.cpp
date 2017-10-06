@@ -7,19 +7,20 @@ void Parser::parseLine(string line)
 
 	lineStream >> identifier;
 	
-	if (identifier.compare("input") == 0)
+	if (identifier.compare(INPUT) == 0)
 	{
 		Parser::parseInput(line);
 	}
-	else if (identifier.compare("output") == 0)
+	else if (identifier.compare(OUTPUT) == 0)
 	{
 		Parser::parseOutput(line);
 	}
-	else if (identifier.compare("wire") == 0)
+	else if (identifier.compare(WIRE) == 0)
 	{
 		Parser::parseWire(line);
 	}
-	else if (identifier.compare("\0") != 0)
+	//All other lines must be operators, filter out whitespace and comments
+	else if (identifier.compare(EMPTY) != 0 && identifier.substr(0,2).compare(COMMENT) != 0)
 	{
 		Parser::parseOperation(line);
 	}

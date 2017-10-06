@@ -5,7 +5,12 @@ Module::Module()
 
 }
 
-Module::Module(string operation, string input1, string input2, string output)
+Module::Module(string operation, vector<string> inputs, string output)
+{
+
+}
+
+void Module::PrintModule()
 {
 
 }

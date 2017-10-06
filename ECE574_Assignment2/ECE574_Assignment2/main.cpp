@@ -10,11 +10,9 @@ vector<string> readNetlist(string fileName);
 
 int main() //will add input arguments in at end of project
 {
-	int i = 0;
+	unsigned int i = 0;
 	vector<string> netlistContents;
 	netlistContents = readNetlist("474a_circuit1.txt");
-
-	string testLine = netlistContents.at(5);
 	
 	for (i = 0; i < netlistContents.size(); i++)
 	{

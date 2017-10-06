@@ -3,6 +3,12 @@
 #include <sstream>
 #include <string>
 
+#define INPUT "input"
+#define OUTPUT "output"
+#define WIRE "wire"
+#define COMMENT "//"
+#define EMPTY "\0"
+
 using namespace std;
 
 class Parser
