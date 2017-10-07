@@ -8,7 +8,7 @@ using namespace std;
 
 vector<string> readNetlist(string fileName);
 
-int main() //will add input arguments in at end of project
+int main() // Will add input arguments in at end of project
 {
 	unsigned int i = 0;
 	vector<string> netlistContents;

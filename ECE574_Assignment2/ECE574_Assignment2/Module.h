@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <string>;
-
 using namespace std;
+#include <iostream>
+#include <vector>
+#include <string>
 
 class Module
 {
@@ -14,6 +14,6 @@ class Module
 		float delay;
 	public:
 		Module();
-		Module(string operation, vector<string> inputs, string output);
+		Module(string operation, vector<string> inputs, string output, float delay);
 		void PrintModule();
 };
