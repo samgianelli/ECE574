@@ -12,11 +12,12 @@ int main() // Will add input arguments in at end of project
 {
 	unsigned int i = 0;
 	vector<string> netlistContents;
+	TopModule *topModule = NULL;
 	netlistContents = readNetlist("474a_circuit1.txt");
 	
 	for (i = 0; i < netlistContents.size(); i++)
 	{
-		Parser::parseLine(netlistContents.at(i));
+		Parser::parseLine(netlistContents.at(i), topModule);
 	}
 }
 

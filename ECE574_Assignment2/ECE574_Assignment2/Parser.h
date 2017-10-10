@@ -4,6 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "Parser.h"
+#include "Module.h"
+#include "IOWire.h"
+#include "TopModule.h"
+
 #define INPUT "input"
 #define OUTPUT "output"
 #define WIRE "wire"
@@ -39,9 +44,9 @@ class Parser
 	private:
 
 	public:
-		static void parseLine(string line);
-		static void parseInput(string inputString);
-		static void parseOutput(string outputString);
+		static void parseLine(string line, TopModule *topModule);
+		static vector<IOWire> parseInput(string inputString);
+		static vector<IOWire> parseOutput(string outputString);
 		static void parseWire(string wireString);
 		static void parseOperation(string operationString);
 };

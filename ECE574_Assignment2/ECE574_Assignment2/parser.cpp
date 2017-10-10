@@ -1,8 +1,6 @@
 #include "Parser.h"
-#include "Module.h"
 
-
-void Parser::parseLine(string line)
+void Parser::parseLine(string line, TopModule * topModule)
 {
 	istringstream lineStream(line);
 	string identifier;
@@ -11,7 +9,7 @@ void Parser::parseLine(string line)
 	
 	if (identifier.compare(INPUT) == 0)
 	{
-		Parser::parseInput(line);
+		topModule->setInputs(Parser::parseInput(line));
 	}
 	else if (identifier.compare(OUTPUT) == 0)
 	{
@@ -28,15 +26,56 @@ void Parser::parseLine(string line)
 	}
 }
 
-void Parser::parseInput(string inputString)
+vector<IOWire> Parser::parseInput(string inputString)
 {
 	cout << "test input: " << inputString << endl;
+	
+	stringstream inputStream(inputString);
+	vector<IOWire> inputs;
+	IOWire bufferInput;
+	string bufferName;
+	string type;
+	string dummy;
+
+	inputStream >> dummy >> type;
+
+	while (inputStream >> bufferName)
+	{
+		// if statement removes commas between inputs
+		if (!isalpha(bufferName.back()))
+		{
+			bufferName = bufferName.substr(0, bufferName.length() - 1);
+		}
+		bufferInput = IOWire::IOWire(bufferName, type);
+		inputs.push_back(bufferInput);
+	}
+	return inputs;
 }
 
-void Parser::parseOutput(string outputString)
+vector<IOWire> Parser::parseOutput(string outputString)
 {
-	
 	cout << "test output: " << outputString << endl;
+
+	stringstream outputStream(outputString);
+	vector<IOWire> outputs;
+	IOWire bufferOutput;
+	string bufferName;
+	string type;
+	string dummy;
+
+	outputStream >> dummy >> type;
+
+	while (outputStream >> bufferName)
+	{
+		// if statement removes commas between inputs
+		if (!isalpha(bufferName.back()))
+		{
+			bufferName = bufferName.substr(0, bufferName.length() - 1);
+		}
+		bufferOutput = IOWire::IOWire(bufferName, type);
+		outputs.push_back(bufferOutput);
+	}
+	return outputs;
 }
 
 void Parser::parseWire(string wireString)
