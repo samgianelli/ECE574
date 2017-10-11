@@ -8,16 +8,27 @@ TopModule::TopModule()
 	this->modules = vector<Module>(0);
 }
 
-void TopModule::setInputs(vector<IOWire> _inputs)
+void TopModule::setInputs(vector<IOWire> &inputs)
 {
-	cout << "Test1" << endl;
-	this->inputs = _inputs;  // THIS LINE IS DYING
-	cout << "Test2" << endl;
+	this->inputs.insert(this->inputs.end(), inputs.begin(), inputs.end());
+	return;
 }
 
-void TopModule::setOutputs(vector<IOWire> outputs)
+void TopModule::setOutputs(vector<IOWire> &outputs)
 {
-	this->outputs = outputs;
+	this->outputs.insert(this->outputs.end(), outputs.begin(), outputs.end());
+	return;
+}
+
+void TopModule::setWires(vector<IOWire> &wires)
+{
+	this->wires.insert(this->wires.end(), wires.begin(), wires.end());
+	return;
+}
+
+void TopModule::addModule(Module module)
+{
+	this->modules.push_back(module);
 }
 
 void TopModule::printInputs()

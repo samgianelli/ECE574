@@ -9,7 +9,7 @@ Module::Module()
 		float delay;
 	*/
 	this->operation = "";
-	//this.inputs;
+	//this->inputs = vector<string>(0);
 	this->output = "";
 	this->delay = 0;
 }

@@ -15,7 +15,7 @@ IOWire::IOWire(string name, string type)
 	this->prev = NULL;
 	this->next = NULL;
 
-	cout << "IOWire constructor:  Name: " << this->name << ",  Type: " << this->type << endl;
+	//cout << "IOWire constructor:  Name: " << this->name << ",  Type: " << this->type << endl;
 }
 
 string IOWire::printIOWire()

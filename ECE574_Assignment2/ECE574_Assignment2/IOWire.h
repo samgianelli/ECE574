@@ -10,11 +10,14 @@ class IOWire {
 	private:
 		string name;
 		string type;
+		
+
+	public:
 		Module *prev;
 		Module *next;
-	public:
-		IOWire();
-		IOWire(string name, string type);
+		IOWire::IOWire();
+		IOWire::IOWire(string name, string type);
 
-		string printIOWire();
+		string IOWire::printIOWire();
+
 };

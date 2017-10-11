@@ -1,9 +1,12 @@
 #pragma once
 
-using namespace std;
 #include <iostream>
 #include <vector>
 #include <string>
+//#include "IOWire.h"
+
+using namespace std;
+
 
 class Module
 {
@@ -12,8 +15,9 @@ class Module
 		vector<string> inputs;
 		string output;
 		float delay;
+
 	public:
-		Module();
-		Module(string operation, vector<string> inputs, string output, float delay);
-		void PrintModule();
+		Module::Module();
+		Module::Module(string operation, vector<string> inputs, string output, float delay);
+		void Module::PrintModule();
 };
