@@ -22,7 +22,7 @@ void Parser::parseLine(string line, TopModule * topModule)
 	//All other lines must be operators, filter out whitespace and comments
 	else if (identifier.compare(EMPTY) != 0 && identifier.substr(0,2).compare(COMMENT) != 0)
 	{
-		topModule->addModule(Parser::parseOperation(line));
+		topModule->addModule(Parser::parseOperation(line, *topModule));
 	}
 }
 
@@ -67,7 +67,7 @@ vector<IOWire> Parser::parseOutput(string outputString)
 
 	while (outputStream >> bufferName)
 	{
-		// if statement removes commas between inputs
+		// if statement removes commas between outputs
 		if (!isalpha(bufferName.back()))
 		{
 			bufferName = bufferName.substr(0, bufferName.length() - 1);
@@ -93,7 +93,7 @@ vector<IOWire> Parser::parseWire(string wireString)
 
 	while (wireStream >> bufferName)
 	{
-		// if statement removes commas between inputs
+		// if statement removes commas between wires
 		if (!isalpha(bufferName.back()))
 		{
 			bufferName = bufferName.substr(0, bufferName.length() - 1);
@@ -104,7 +104,7 @@ vector<IOWire> Parser::parseWire(string wireString)
 	return wires;
 }
 
-Module Parser::parseOperation(string operationString)
+Module Parser::parseOperation(string operationString, TopModule &topModule)
 {
 	//d = a + b
 	std::string dummy;			// Use this whenever you want to ignore a character in string stream
@@ -113,67 +113,55 @@ Module Parser::parseOperation(string operationString)
 	std::string inputChar2;
 	std::string inputChar3;
 	std::string outputChar;
-	std::vector<std::string> inputs;
+	vector<string> inputs;
+	std::vector<IOWire> inputWires;
+	IOWire outputWire;
 	std::stringstream ss(operationString);
 	Module opModule;
 	
+	ss >> outputChar >> dummy >> inputChar1 >> operatorChar >> inputChar2 >> dummy >> inputChar3;
+
+	inputWires.push_back(topModule.findInputWire(inputChar1));
+	if (inputChar2.compare("\0") != 0) { inputWires.push_back(topModule.findInputWire(inputChar2)); }
+	if (inputChar3.compare("\0") != 0) { inputWires.push_back(topModule.findInputWire(inputChar3)); }
 	
-	ss >> outputChar >> dummy >> inputChar1 >> operatorChar >> inputChar2 >> dummy >> inputChar3; 
+	outputWire = topModule.findOutputWire(outputChar);
+
 	if (operatorChar.compare(ADD) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("ADD", inputs, outputChar, ADD_L);
+		opModule = Module("ADD", inputWires, outputWire, ADD_L);
 	}
 	else if(operatorChar.compare(SUB) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("ADD", inputs, outputChar, ADD_L);
+		opModule = Module("SUB", inputWires, outputWire, ADD_L);
 	}
 	else if(operatorChar.compare(MUL) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("MUL", inputs, outputChar, MUL_L);
+		opModule = Module("MUL", inputWires, outputWire, MUL_L);
 	}
 	else if(operatorChar.compare(GT) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("GT", inputs, outputChar, COMP_L);
+		opModule = Module("GT", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(LT) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("LT", inputs, outputChar, COMP_L);
+		opModule = Module("LT", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(EQ) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("EQ", inputs, outputChar, COMP_L);
+		opModule = Module("EQ", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(SEL) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		inputs.push_back(inputChar3);
-		opModule = Module("MUX", inputs, outputChar, SEL_L);
+		opModule = Module("MUX", inputWires, outputWire, SEL_L);
 	}
 	else if(operatorChar.compare(SHR) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("SHR", inputs, outputChar, SHR_L);
+		opModule = Module("SHR", inputWires, outputWire, SHR_L);
 	}
 	else if(operatorChar.compare(SHL) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("SHL", inputs, outputChar, SHL_L);
+		opModule = Module("SHL", inputWires, outputWire, SHL_L);
 	}
 	else if(operatorChar.compare(DIV) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("DIV", inputs, outputChar, DIV_L);
+		opModule = Module("DIV", inputWires, outputWire, DIV_L);
 	}
 	else if(operatorChar.compare(MOD) == 0) {
-		inputs.push_back(inputChar1);
-		inputs.push_back(inputChar2);
-		opModule = Module("MOD", inputs, outputChar, MOD_L);
+		opModule = Module("MOD", inputWires, outputWire, MOD_L);
+	}
+	else  {
+		opModule = Module("REG", inputWires, outputWire, 0);   // TODO: Find Reg latency
 	}
 	return opModule;
 }

@@ -6,6 +6,7 @@ TopModule::TopModule()
 	this->outputs = vector<IOWire>(0);
 	this->wires = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
+	this->numberModules = 0;
 }
 
 void TopModule::setInputs(vector<IOWire> &inputs)
@@ -29,6 +30,57 @@ void TopModule::setWires(vector<IOWire> &wires)
 void TopModule::addModule(Module module)
 {
 	this->modules.push_back(module);
+	numberModules++;
+}
+
+IOWire TopModule::findInputWire(string wireName)
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->inputs.size(); i++)
+	{
+		if (this->inputs.at(i).getName().compare(wireName) == 0)
+		{
+			return this->inputs.at(i);
+		}
+ 	}
+
+	for (i = 0; i < this->wires.size(); i++)
+	{
+		if (this->wires.at(i).getName().compare(wireName) == 0)
+		{
+			return this->wires.at(i);
+		}
+	}
+
+	cout << "No Module input found for: " << wireName << endl;
+
+	return IOWire();
+}
+
+IOWire TopModule::findOutputWire(string wireName)
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->outputs.size(); i++)
+	{
+		if (this->outputs.at(i).getName().compare(wireName) == 0)
+		{
+			return this->outputs.at(i);
+		}
+	}
+
+	for (i = 0; i < this->wires.size(); i++)
+	{
+		if (this->wires.at(i).getName().compare(wireName) == 0)
+		{
+			return this->wires.at(i);
+		}
+	}
+
+	cout << "No Module output found for: " << wireName << endl;
+
+	return IOWire();
 }
 
 void TopModule::printInputs()

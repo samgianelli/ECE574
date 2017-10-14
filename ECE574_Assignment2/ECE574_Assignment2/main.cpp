@@ -19,6 +19,17 @@ int main() // Will add input arguments in at end of project
 	{
 		Parser::parseLine(netlistContents.at(i), topModule);
 	}
+
+
+	//TODO: Ensure we can traverse the graph
+	Module *temp = &(topModule->modules.at(0));
+	while (temp != NULL)
+	{
+		cout << "$$$$$$$$$$$$$$$$$$$$" << endl;
+		temp->PrintModule();
+		temp = temp->getOutputs().next;
+	}
+
 }
 
 vector<string> readNetlist(string fileName)

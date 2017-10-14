@@ -2,31 +2,47 @@
 
 Module::Module()
 {
-	/*
-		string operation;
-		vector<string> inputs;
-		string output;
-		float delay;
-	*/
 	this->operation = "";
-	//this->inputs = vector<string>(0);
-	this->output = "";
+	this->inputs = vector<IOWire>(0);
+	this->output = IOWire();
 	this->delay = 0;
 }
 
-Module::Module(string operation, vector<string> inputs, string output, float delay)
+Module::Module(string operation, vector<IOWire> &inputs, IOWire &output, float delay)
 {
 	cout << "In module overloaded constructor" << endl;
 	cout << "Creating " << operation << " module" << endl;
-	cout << "\t output: " << output << " delay: " << delay << endl;
+	//cout << "\t output: " << output << " delay: " << delay << endl;
 
 	this->operation = operation;
 	this->inputs = inputs;
 	this->output = output;
 	this->delay = delay;
+
+	int i = 0;
+	for (i = 0; i < inputs.size(); i++)
+	{
+		this->inputs.at(i).setNext(this);
+	}
+	this->output.setPrev(this);
+}
+
+vector<IOWire> Module::getInputs()
+{
+	return this->inputs;
+}
+
+IOWire Module::getOutputs()
+{
+	return this->output;
+}
+
+float Module::getDelay()
+{
+	return this->delay;
 }
 
 void Module::PrintModule()
 {
-
+	cout << "Module Name: " << this->operation << endl;
 }
