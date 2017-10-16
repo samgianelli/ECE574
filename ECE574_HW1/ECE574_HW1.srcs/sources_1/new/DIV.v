@@ -30,3 +30,15 @@ module DIV(a, b, quot);
     end
     
 endmodule
+
+
+module SDIV(a, b, quot);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, b;
+    output reg signed [DATAWIDTH - 1 : 0] quot;
+    
+    always @(a, b) begin
+        quot <= a / b;
+    end
+    
+endmodule

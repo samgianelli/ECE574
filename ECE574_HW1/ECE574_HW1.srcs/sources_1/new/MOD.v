@@ -30,3 +30,15 @@ module MOD(a, b, rem);
     end
     
 endmodule
+
+
+module SMOD(a, b, rem);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, b;
+    output reg signed [DATAWIDTH - 1 : 0] rem;
+    
+    always @(a, b) begin
+        rem <= a % b;
+    end
+    
+endmodule

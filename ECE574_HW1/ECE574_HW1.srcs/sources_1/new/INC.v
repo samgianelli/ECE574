@@ -30,3 +30,15 @@ module INC(a, d);
     end
     
 endmodule
+
+
+module SINC(a, d);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a;
+    output reg signed [DATAWIDTH - 1 : 0] d;
+
+    always @(a) begin
+        d <= a + 1;
+    end
+    
+endmodule
