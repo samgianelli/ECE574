@@ -23,7 +23,23 @@
 module MUL(a, b, prod);
     parameter DATAWIDTH = 8;
     input [DATAWIDTH - 1 : 0] a, b;
-    output reg [DATAWIDTH - 1 : 0] prod;
+    output reg [2 * DATAWIDTH - 1 : 0] prod;
+        
+    initial begin
+        prod <= 0;
+    end
+    
+    always @(a, b) begin
+        prod <= a * b;
+    end   
+     
+endmodule
+
+
+module SMUL(a, b, prod);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, b;
+    output reg signed [2 * DATAWIDTH - 1 : 0] prod;
         
     initial begin
         prod <= 0;

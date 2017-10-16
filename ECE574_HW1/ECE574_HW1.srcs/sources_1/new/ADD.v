@@ -34,3 +34,19 @@ module ADD(a, b, sum);
     end   
      
 endmodule
+
+
+module SADD(a, b, sum);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, b;
+    output reg signed [DATAWIDTH - 1 : 0] sum;
+        
+    initial begin
+        sum <= 0;
+    end
+    
+    always @(a, b) begin
+        sum <= a + b;
+    end   
+     
+endmodule

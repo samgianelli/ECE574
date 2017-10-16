@@ -30,3 +30,15 @@ module SUB(a, b, diff);
     end   
      
 endmodule
+
+
+module SSUB(a, b, diff);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, b;
+    output reg signed [DATAWIDTH - 1 : 0] diff;
+    
+    always @(a) begin
+        diff <= a - b;
+    end   
+     
+endmodule

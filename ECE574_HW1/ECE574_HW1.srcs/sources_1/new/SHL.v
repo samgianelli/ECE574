@@ -34,3 +34,18 @@ module SHL(a, sh_amt, d);
     end   
 
 endmodule
+
+module SSHL(a, sh_amt, d);
+    parameter DATAWIDTH = 8;
+    input signed [DATAWIDTH - 1 : 0] a, sh_amt;
+    output reg signed [DATAWIDTH - 1 : 0] d;
+        
+    initial begin
+        d <= 0;
+    end
+    
+    always @(a, sh_amt) begin
+        d <= a << sh_amt;
+    end   
+
+endmodule
