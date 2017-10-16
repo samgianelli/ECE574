@@ -114,10 +114,10 @@ Module Parser::parseOperation(string operationString, TopModule &topModule)
 	std::string inputChar3;
 	std::string outputChar;
 	vector<string> inputs;
-	std::vector<IOWire> inputWires;
-	IOWire outputWire;
+	std::vector<IOWire*> inputWires;
+	IOWire* outputWire;
 	std::stringstream ss(operationString);
-	Module opModule;
+	Module *opModule;
 	
 	ss >> outputChar >> dummy >> inputChar1 >> operatorChar >> inputChar2 >> dummy >> inputChar3;
 
@@ -128,40 +128,40 @@ Module Parser::parseOperation(string operationString, TopModule &topModule)
 	outputWire = topModule.findOutputWire(outputChar);
 
 	if (operatorChar.compare(ADD) == 0) {
-		opModule = Module("ADD", inputWires, outputWire, ADD_L);
+		opModule = new Module("ADD", inputWires, outputWire, ADD_L);
 	}
 	else if(operatorChar.compare(SUB) == 0) {
-		opModule = Module("SUB", inputWires, outputWire, ADD_L);
+		opModule = new Module("SUB", inputWires, outputWire, ADD_L);
 	}
 	else if(operatorChar.compare(MUL) == 0) {
-		opModule = Module("MUL", inputWires, outputWire, MUL_L);
+		opModule = new Module("MUL", inputWires, outputWire, MUL_L);
 	}
 	else if(operatorChar.compare(GT) == 0) {
-		opModule = Module("GT", inputWires, outputWire, COMP_L);
+		opModule = new Module("GT", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(LT) == 0) {
-		opModule = Module("LT", inputWires, outputWire, COMP_L);
+		opModule = new Module("LT", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(EQ) == 0) {
-		opModule = Module("EQ", inputWires, outputWire, COMP_L);
+		opModule = new Module("EQ", inputWires, outputWire, COMP_L);
 	}
 	else if(operatorChar.compare(SEL) == 0) {
-		opModule = Module("MUX", inputWires, outputWire, SEL_L);
+		opModule = new Module("MUX", inputWires, outputWire, SEL_L);
 	}
 	else if(operatorChar.compare(SHR) == 0) {
-		opModule = Module("SHR", inputWires, outputWire, SHR_L);
+		opModule = new Module("SHR", inputWires, outputWire, SHR_L);
 	}
 	else if(operatorChar.compare(SHL) == 0) {
-		opModule = Module("SHL", inputWires, outputWire, SHL_L);
+		opModule = new Module("SHL", inputWires, outputWire, SHL_L);
 	}
 	else if(operatorChar.compare(DIV) == 0) {
-		opModule = Module("DIV", inputWires, outputWire, DIV_L);
+		opModule = new Module("DIV", inputWires, outputWire, DIV_L);
 	}
 	else if(operatorChar.compare(MOD) == 0) {
-		opModule = Module("MOD", inputWires, outputWire, MOD_L);
+		opModule = new Module("MOD", inputWires, outputWire, MOD_L);
 	}
 	else  {
-		opModule = Module("REG", inputWires, outputWire, 0);   // TODO: Find Reg latency
+		opModule = new Module("REG", inputWires, outputWire, 0);   // TODO: Find Reg latency
 	}
-	return opModule;
+	return *opModule;
 }

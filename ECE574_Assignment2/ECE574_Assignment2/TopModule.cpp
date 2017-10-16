@@ -9,19 +9,19 @@ TopModule::TopModule()
 	this->numberModules = 0;
 }
 
-void TopModule::setInputs(vector<IOWire> &inputs)
+void TopModule::setInputs(vector<IOWire> inputs)
 {
 	this->inputs.insert(this->inputs.end(), inputs.begin(), inputs.end());
 	return;
 }
 
-void TopModule::setOutputs(vector<IOWire> &outputs)
+void TopModule::setOutputs(vector<IOWire> outputs)
 {
 	this->outputs.insert(this->outputs.end(), outputs.begin(), outputs.end());
 	return;
 }
 
-void TopModule::setWires(vector<IOWire> &wires)
+void TopModule::setWires(vector<IOWire> wires)
 {
 	this->wires.insert(this->wires.end(), wires.begin(), wires.end());
 	return;
@@ -33,7 +33,12 @@ void TopModule::addModule(Module module)
 	numberModules++;
 }
 
-IOWire TopModule::findInputWire(string wireName)
+int TopModule::getNumberModules()
+{
+	return this->numberModules;
+}
+
+IOWire* TopModule::findInputWire(string wireName)
 {
 	unsigned int i = 0;
 
@@ -41,7 +46,7 @@ IOWire TopModule::findInputWire(string wireName)
 	{
 		if (this->inputs.at(i).getName().compare(wireName) == 0)
 		{
-			return this->inputs.at(i);
+			return &(this->inputs.at(i));
 		}
  	}
 
@@ -49,16 +54,16 @@ IOWire TopModule::findInputWire(string wireName)
 	{
 		if (this->wires.at(i).getName().compare(wireName) == 0)
 		{
-			return this->wires.at(i);
+			return &(this->wires.at(i));
 		}
 	}
 
 	cout << "No Module input found for: " << wireName << endl;
 
-	return IOWire();
+	return new IOWire();
 }
 
-IOWire TopModule::findOutputWire(string wireName)
+IOWire* TopModule::findOutputWire(string wireName)
 {
 	unsigned int i = 0;
 
@@ -66,7 +71,7 @@ IOWire TopModule::findOutputWire(string wireName)
 	{
 		if (this->outputs.at(i).getName().compare(wireName) == 0)
 		{
-			return this->outputs.at(i);
+			return &(this->outputs.at(i));
 		}
 	}
 
@@ -74,13 +79,13 @@ IOWire TopModule::findOutputWire(string wireName)
 	{
 		if (this->wires.at(i).getName().compare(wireName) == 0)
 		{
-			return this->wires.at(i);
+			return &(this->wires.at(i));
 		}
 	}
 
 	cout << "No Module output found for: " << wireName << endl;
 
-	return IOWire();
+	return new IOWire();
 }
 
 void TopModule::printInputs()

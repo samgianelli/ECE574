@@ -20,14 +20,25 @@ int main() // Will add input arguments in at end of project
 		Parser::parseLine(netlistContents.at(i), topModule);
 	}
 
+	for (i = 0; i < topModule->wires.size(); i++)
+	{
+		//cout << topModule->wires.at(i).next->getOperation() << endl;
+		if (topModule->wires.at(i).next.at(0) == NULL)
+		{
+			cout << "NULL NULL NULLY NULL" << endl;
+		}
+	}
 
+	cout << "*******" << topModule->wires.size() << endl;
 	//TODO: Ensure we can traverse the graph
-	Module *temp = &(topModule->modules.at(0));
+	Module *temp = new Module();
+	temp = &(topModule->modules.at(0));
 	while (temp != NULL)
 	{
 		cout << "$$$$$$$$$$$$$$$$$$$$" << endl;
 		temp->PrintModule();
-		temp = temp->getOutputs().next;
+		if (temp->getOutputs()->next.size() > 0) { temp = temp->getOutputs()->next.at(0); }
+		else { break; }
 	}
 
 }

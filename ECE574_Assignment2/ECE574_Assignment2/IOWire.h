@@ -16,12 +16,13 @@ class IOWire {
 
 	public:
 		Module *prev;
-		Module *next;
+		vector<Module*> next;
 
 		IOWire::IOWire();
 		IOWire::IOWire(string name, string type);
 
-		void IOWire::setNext(Module *next);
+		void IOWire::setNext(vector<Module*> next);
+		void IOWire::addNext(Module *next);
 		void IOWire::setPrev(Module *prev);
 		string IOWire::getName();
 		string IOWire::getType();

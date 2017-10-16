@@ -18,12 +18,13 @@ class TopModule {
 
 		TopModule::TopModule();
 
-		void TopModule::setInputs(vector<IOWire> &inputs);
-		void TopModule::setOutputs(vector<IOWire> &outputs);
-		void TopModule::setWires(vector<IOWire> &wires);
+		void TopModule::setInputs(vector<IOWire> inputs);
+		void TopModule::setOutputs(vector<IOWire> outputs);
+		void TopModule::setWires(vector<IOWire> wires);
 		void TopModule::addModule(Module module);
-		IOWire TopModule::findInputWire(string wireName);
-		IOWire TopModule::findOutputWire(string wireName);
+		int TopModule::getNumberModules();
+		IOWire* TopModule::findInputWire(string wireName);
+		IOWire* TopModule::findOutputWire(string wireName);
 
 		void TopModule::printInputs();
 };

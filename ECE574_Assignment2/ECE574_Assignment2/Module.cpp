@@ -3,12 +3,12 @@
 Module::Module()
 {
 	this->operation = "";
-	this->inputs = vector<IOWire>(0);
-	this->output = IOWire();
+	this->inputs = vector<IOWire*>(0);
+	this->output = new IOWire();
 	this->delay = 0;
 }
 
-Module::Module(string operation, vector<IOWire> &inputs, IOWire &output, float delay)
+Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float delay)
 {
 	cout << "In module overloaded constructor" << endl;
 	cout << "Creating " << operation << " module" << endl;
@@ -22,17 +22,22 @@ Module::Module(string operation, vector<IOWire> &inputs, IOWire &output, float d
 	int i = 0;
 	for (i = 0; i < inputs.size(); i++)
 	{
-		this->inputs.at(i).setNext(this);
+		this->inputs.at(i)->addNext(this);
 	}
-	this->output.setPrev(this);
+	this->output->setPrev(this);
 }
 
-vector<IOWire> Module::getInputs()
+string Module::getOperation()
+{
+	return this->operation;
+}
+
+vector<IOWire*> Module::getInputs()
 {
 	return this->inputs;
 }
 
-IOWire Module::getOutputs()
+IOWire* Module::getOutputs()
 {
 	return this->output;
 }

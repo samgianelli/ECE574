@@ -14,16 +14,17 @@ class Module
 {
 	private:
 		string operation;
-		vector<IOWire> inputs;
-		IOWire output;
+		vector<IOWire*> inputs;
+		IOWire* output;
 		float delay;
 
 	public:
 		Module::Module();
-		Module::Module(string operation, vector<IOWire> &inputs, IOWire &output, float delay);
+		Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float delay);
 
-		vector<IOWire> Module::getInputs();
-		IOWire Module::getOutputs();
+		string Module::getOperation();
+		vector<IOWire*> Module::getInputs();
+		IOWire* Module::getOutputs();
 		float Module::getDelay();
 		void Module::PrintModule();
 };
