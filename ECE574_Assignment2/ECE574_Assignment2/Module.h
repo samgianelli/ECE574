@@ -27,4 +27,5 @@ class Module
 		IOWire* Module::getOutputs();
 		float Module::getDelay();
 		void Module::PrintModule();
+		void Module::PrintModuleStatement(int moduleNum);
 };

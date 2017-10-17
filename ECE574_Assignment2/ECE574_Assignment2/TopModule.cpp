@@ -6,7 +6,6 @@ TopModule::TopModule()
 	this->outputs = vector<IOWire>(0);
 	this->wires = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
-	this->numberModules = 0;
 }
 
 void TopModule::setInputs(vector<IOWire> inputs)
@@ -30,12 +29,6 @@ void TopModule::setWires(vector<IOWire> wires)
 void TopModule::addModule(Module module)
 {
 	this->modules.push_back(module);
-	numberModules++;
-}
-
-int TopModule::getNumberModules()
-{
-	return this->numberModules;
 }
 
 IOWire* TopModule::findInputWire(string wireName)

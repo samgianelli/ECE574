@@ -9,7 +9,6 @@ using namespace std;
 class TopModule {
 	private:
 		float criticalPathDelay;
-		int numberModules;
 	public:
 		vector<Module> modules;
 		vector<IOWire> inputs;
@@ -22,7 +21,6 @@ class TopModule {
 		void TopModule::setOutputs(vector<IOWire> outputs);
 		void TopModule::setWires(vector<IOWire> wires);
 		void TopModule::addModule(Module module);
-		int TopModule::getNumberModules();
 		IOWire* TopModule::findInputWire(string wireName);
 		IOWire* TopModule::findOutputWire(string wireName);
 

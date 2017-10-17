@@ -32,13 +32,19 @@ int main() // Will add input arguments in at end of project
 	cout << "*******" << topModule->wires.size() << endl;
 	//TODO: Ensure we can traverse the graph
 	Module *temp = new Module();
-	temp = &(topModule->modules.at(0));
+	temp = &(topModule->modules.at(1));
 	while (temp != NULL)
 	{
-		cout << "$$$$$$$$$$$$$$$$$$$$" << endl;
 		temp->PrintModule();
 		if (temp->getOutputs()->next.size() > 0) { temp = temp->getOutputs()->next.at(0); }
 		else { break; }
+	}
+
+	// Test Print Module statements
+	cout << endl << endl;
+	for (i = 0; i < topModule->modules.size(); i++)
+	{
+		topModule->modules.at(i).PrintModuleStatement(i);
 	}
 
 }

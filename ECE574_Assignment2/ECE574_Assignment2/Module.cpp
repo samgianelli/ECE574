@@ -51,3 +51,25 @@ void Module::PrintModule()
 {
 	cout << "Module Name: " << this->operation << endl;
 }
+
+void Module::PrintModuleStatement(int moduleNum)
+{
+	string inputs;
+	string output;
+	string statement; 
+	unsigned int i = 0;
+	
+	// Parse/Format input names
+	for (i = 0; i < this->inputs.size(); i++)
+	{
+		inputs += this->inputs.at(i)->getName() + ", ";
+	}
+	inputs = inputs.substr(0, inputs.length()-2);
+
+	// Pars/Format output name
+	output = this->output->getName();
+
+	// Format final output statement
+	statement = this->operation + " " + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
+	cout << statement << endl;
+}
