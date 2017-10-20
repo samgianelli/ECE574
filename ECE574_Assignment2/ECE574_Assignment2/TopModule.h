@@ -25,4 +25,9 @@ class TopModule {
 		IOWire* TopModule::findOutputWire(string wireName);
 
 		void TopModule::printInputs();
+		void TopModule::printOutputs();
+		void TopModule::printWires();
+		void TopModule::printModuleName();
+		void TopModule::printModules();
+
 };

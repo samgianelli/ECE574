@@ -13,7 +13,7 @@ int main() // Will add input arguments in at end of project
 	unsigned int i = 0;
 	vector<string> netlistContents;
 	TopModule *topModule = new TopModule();
-	netlistContents = readNetlist("474a_circuit1.txt");
+	netlistContents = readNetlist("474a_circuit3.txt");
 	
 	for (i = 0; i < netlistContents.size(); i++)
 	{
@@ -40,12 +40,15 @@ int main() // Will add input arguments in at end of project
 		else { break; }
 	}
 
-	// Test Print Module statements
+	// Testing printing what will be placed in the file
 	cout << endl << endl;
-	for (i = 0; i < topModule->modules.size(); i++)
-	{
-		topModule->modules.at(i).PrintModuleStatement(i);
-	}
+	topModule->printModuleName();
+	topModule->printInputs();
+	topModule->printOutputs();
+	topModule->printWires();
+	cout << endl;
+	topModule->printModules();
+	cout << "\nendmodule" << endl << endl;
 
 }
 

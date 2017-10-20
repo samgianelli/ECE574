@@ -85,8 +85,66 @@ void TopModule::printInputs()
 {
 	unsigned int i = 0;
 
+	cout << "\tinput clk, rst;" << endl;
 	for (i = 0; i < this->inputs.size(); i++)
 	{
-		cout << this->inputs.at(i).printIOWire();
+		cout << "\tinput " << this->inputs.at(i).printIOWire() << endl;
 	}
+}
+
+void TopModule::printOutputs()
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->outputs.size(); i++)
+	{
+		cout << "\toutput " << this->outputs.at(i).printIOWire() << endl;
+	}
+
+}
+
+void TopModule::printWires()
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->wires.size(); i++)
+	{
+		cout << "\twire " << this->wires.at(i).printIOWire() << endl;
+	}
+}
+
+void TopModule::printModuleName()
+{
+	string CircuitName = "Circuit1";
+	string inputOutputList = "(clk, rst, ";
+	unsigned int i;
+
+	for (i = 0; i < this->inputs.size(); i++)
+	{
+		inputOutputList += this->inputs.at(i).getName() + ", ";
+		//cout << this->wires.at(i).printIOWire() << endl;
+	}
+	for (i = 0; i < this->outputs.size(); i++)
+	{
+		if (i != (this->outputs.size() - 1)) {
+			inputOutputList += this->outputs.at(i).getName() + ", ";
+		}
+		else {
+			inputOutputList += this->outputs.at(i).getName() + ");";
+		}
+			//cout << this->wires.at(i).printIOWire() << endl;
+	}
+
+	cout << "module " << CircuitName << inputOutputList << endl << endl;
+}
+
+void TopModule::printModules() {
+	unsigned int i = 0;
+
+	for (i = 0; i < this->modules.size(); i++)
+	{
+		cout << "\t";
+		this->modules.at(i).PrintModuleStatement(i);
+	}
+
 }

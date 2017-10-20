@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "Module.h"
+
 
 class Module;
 
@@ -12,6 +14,7 @@ class IOWire {
 	private:
 		string name;
 		string type;
+		int bitWidth;
 		
 
 	public:
@@ -26,6 +29,10 @@ class IOWire {
 		void IOWire::setPrev(Module *prev);
 		string IOWire::getName();
 		string IOWire::getType();
+		int IOWire::getBitWidth();
+
 		string IOWire::printIOWire();
+		string IOWire::printBitWidth();
+
 
 };

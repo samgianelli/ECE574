@@ -17,6 +17,7 @@ class Module
 		vector<IOWire*> inputs;
 		IOWire* output;
 		float delay;
+		int maxBitWidth;
 
 	public:
 		Module::Module();
@@ -26,6 +27,7 @@ class Module
 		vector<IOWire*> Module::getInputs();
 		IOWire* Module::getOutputs();
 		float Module::getDelay();
+		int Module::getMaxBitWidth();
 		void Module::PrintModule();
 		void Module::PrintModuleStatement(int moduleNum);
 };
