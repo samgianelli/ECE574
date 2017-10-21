@@ -7,49 +7,47 @@
 using namespace std;
 
 vector<string> readNetlist(string fileName);
+void writeToFile(string circuitName, TopModule *topModule);
 
 int main() // Will add input arguments in at end of project
 {
-	unsigned int i = 0;
-	vector<string> netlistContents;
-	TopModule *topModule = new TopModule();
-	netlistContents = readNetlist("474a_circuit3.txt");
-	
-	for (i = 0; i < netlistContents.size(); i++)
-	{
-		Parser::parseLine(netlistContents.at(i), topModule);
-	}
+	vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
+	//vector<string> circuits = { "474a_circuit1" };
+	for (string circuitName : circuits) {
+		unsigned int i = 0;
+		vector<string> netlistContents;
+		TopModule *topModule = new TopModule();
+		netlistContents = readNetlist(circuitName + ".txt");
 
-	for (i = 0; i < topModule->wires.size(); i++)
-	{
-		//cout << topModule->wires.at(i).next->getOperation() << endl;
-		if (topModule->wires.at(i).next.at(0) == NULL)
+		for (i = 0; i < netlistContents.size(); i++)
 		{
-			cout << "NULL NULL NULLY NULL" << endl;
+			Parser::parseLine(netlistContents.at(i), topModule);
 		}
+
+		for (i = 0; i < topModule->wires.size(); i++)
+		{
+			//cout << topModule->wires.at(i).next->getOperation() << endl;
+			// TODO Fix, this was causing a crash with circuit 3
+			if (topModule->wires.at(i).next.at(0) == NULL)
+			{
+				cout << "NULL NULL NULLY NULL" << endl;
+			}
+		}
+
+		cout << "*******" << topModule->wires.size() << endl;
+		//TODO: Ensure we can traverse the graph
+		Module *temp = new Module();
+		temp = &(topModule->modules.at(1));
+		while (temp != NULL)
+		{
+			temp->PrintModule();
+			if (temp->getOutputs()->next.size() > 0) { temp = temp->getOutputs()->next.at(0); }
+			else { break; }
+		}
+
+		// Write to the .v file
+		writeToFile(circuitName, topModule);
 	}
-
-	cout << "*******" << topModule->wires.size() << endl;
-	//TODO: Ensure we can traverse the graph
-	Module *temp = new Module();
-	temp = &(topModule->modules.at(1));
-	while (temp != NULL)
-	{
-		temp->PrintModule();
-		if (temp->getOutputs()->next.size() > 0) { temp = temp->getOutputs()->next.at(0); }
-		else { break; }
-	}
-
-	// Testing printing what will be placed in the file
-	cout << endl << endl;
-	topModule->printModuleName();
-	topModule->printInputs();
-	topModule->printOutputs();
-	topModule->printWires();
-	cout << endl;
-	topModule->printModules();
-	cout << "\nendmodule" << endl << endl;
-
 }
 
 vector<string> readNetlist(string fileName)
@@ -71,4 +69,18 @@ vector<string> readNetlist(string fileName)
 	else cout << "Cannot open file: " << fileName << endl;
 
 	return netlistContents;
+}
+
+void writeToFile(string circuitName, TopModule *topModule) {
+	ofstream circuitFile;
+	circuitFile.open(circuitName + ".v");
+	cout << endl << endl;
+	topModule->printModuleName(circuitFile, circuitName);
+	topModule->printInputs(circuitFile);
+	topModule->printOutputs(circuitFile);
+	topModule->printWires(circuitFile);
+	circuitFile << endl;
+	topModule->printModules(circuitFile);
+	circuitFile << "\nendmodule" << endl << endl;
+	circuitFile.close();
 }

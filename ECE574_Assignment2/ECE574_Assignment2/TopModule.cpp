@@ -81,41 +81,43 @@ IOWire* TopModule::findOutputWire(string wireName)
 	return new IOWire();
 }
 
-void TopModule::printInputs()
+void TopModule::printInputs(ofstream& circuitFile)
 {
 	unsigned int i = 0;
 
-	cout << "\tinput clk, rst;" << endl;
+	circuitFile << "\tinput clk, rst;" << endl;
 	for (i = 0; i < this->inputs.size(); i++)
 	{
-		cout << "\tinput " << this->inputs.at(i).printIOWire() << endl;
+		circuitFile << "\tinput " << this->inputs.at(i).printIOWire() << ";" << endl;
 	}
 }
 
-void TopModule::printOutputs()
+void TopModule::printOutputs(ofstream& circuitFile)
 {
 	unsigned int i = 0;
 
 	for (i = 0; i < this->outputs.size(); i++)
 	{
-		cout << "\toutput " << this->outputs.at(i).printIOWire() << endl;
+		circuitFile << "\toutput " << this->outputs.at(i).printIOWire() << ";" << endl;
 	}
 
 }
 
-void TopModule::printWires()
+void TopModule::printWires(ofstream& circuitFile)
 {
 	unsigned int i = 0;
 
 	for (i = 0; i < this->wires.size(); i++)
 	{
-		cout << "\twire " << this->wires.at(i).printIOWire() << endl;
+		circuitFile << "\twire " << this->wires.at(i).printIOWire() << ";" << endl;
 	}
 }
 
-void TopModule::printModuleName()
+void TopModule::printModuleName(ofstream& circuitFile, string CircuitName)
 {
-	string CircuitName = "Circuit1";
+	if (CircuitName.substr(0, 5) == "474a_" || CircuitName.substr(0, 5) == "574a_") {
+		CircuitName.erase(0, 5);
+	}
 	string inputOutputList = "(clk, rst, ";
 	unsigned int i;
 
@@ -135,16 +137,16 @@ void TopModule::printModuleName()
 			//cout << this->wires.at(i).printIOWire() << endl;
 	}
 
-	cout << "module " << CircuitName << inputOutputList << endl << endl;
+	circuitFile << "module " << CircuitName << inputOutputList << endl << endl;
 }
 
-void TopModule::printModules() {
+void TopModule::printModules(ofstream& circuitFile) {
 	unsigned int i = 0;
 
 	for (i = 0; i < this->modules.size(); i++)
 	{
-		cout << "\t";
-		this->modules.at(i).PrintModuleStatement(i);
+		circuitFile << "\t";
+		this->modules.at(i).PrintModuleStatement(circuitFile, i);
 	}
 
 }

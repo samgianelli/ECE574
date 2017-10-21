@@ -25,7 +25,7 @@ module SUB(a, b, diff);
     input [DATAWIDTH - 1 : 0] a, b;
     output reg [DATAWIDTH - 1 : 0] diff;
     
-    always @(a) begin
+    always @(*) begin
         diff <= a - b;
     end   
      
@@ -37,7 +37,7 @@ module SSUB(a, b, diff);
     input signed [DATAWIDTH - 1 : 0] a, b;
     output reg signed [DATAWIDTH - 1 : 0] diff;
     
-    always @(a) begin
+    always @(*) begin
         diff <= a - b;
     end   
      

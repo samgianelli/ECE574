@@ -29,7 +29,7 @@ module COMP(a, b, gt, lt, eq);
         gt <= 0; lt <= 0; eq <= 0;
     end
     
-    always @(a) begin
+    always @(*) begin
         if (a > b) begin
             gt <= 1;
         end
@@ -53,7 +53,7 @@ module SCOMP(a, b, gt, lt, eq);
         gt <= 0; lt <= 0; eq <= 0;
     end
     
-    always @(a) begin
+    always @(*) begin
         if (a > b) begin
             gt <= 1;
         end

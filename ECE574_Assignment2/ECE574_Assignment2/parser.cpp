@@ -94,7 +94,7 @@ vector<IOWire> Parser::parseWire(string wireString)
 	while (wireStream >> bufferName)
 	{
 		// if statement removes commas between wires
-		if (!isalpha(bufferName.back()))
+		if (!isalnum(bufferName.back()))
 		{
 			bufferName = bufferName.substr(0, bufferName.length() - 1);
 		}

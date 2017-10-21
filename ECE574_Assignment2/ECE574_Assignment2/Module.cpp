@@ -29,6 +29,10 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float d
 			tempMaxBitWidth = inputs.at(i)->getBitWidth();
 		}
 	}
+	if (this->operation == "MUX") {
+		tempMaxBitWidth = this->inputs.at(1)->getBitWidth() > this->inputs.at(2)->getBitWidth() ? this->inputs.at(1)->getBitWidth() : this->inputs.at(2)->getBitWidth();
+	}
+
 	this->output->setPrev(this);
 	this->maxBitWidth = tempMaxBitWidth;
 }
@@ -58,7 +62,7 @@ void Module::PrintModule()
 	cout << "Module Name: " << this->operation << endl;
 }
 
-void Module::PrintModuleStatement(int moduleNum)
+void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum)
 {
 	string inputs;
 	string output;
@@ -71,6 +75,9 @@ void Module::PrintModuleStatement(int moduleNum)
 		inputs += this->inputs.at(i)->getName() + ", ";
 	}
 	inputs = inputs.substr(0, inputs.length()-2);
+	if (this->operation == "MUX") {
+		inputs = this->inputs.at(2)->getName() + ", " + this->inputs.at(1)->getName() + ", " + this->inputs.at(0)->getName();
+	}
 
 	// Pars/Format output name
 	output = this->output->getName();
@@ -85,15 +92,17 @@ void Module::PrintModuleStatement(int moduleNum)
 	}
 	else if (this->operation == "EQ") {
 		statement = "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", , ," + output + ");";
-
 	}
 	else if (this->operation == "REG") {
 		statement = "REG #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", clk, rst, " + output + ");";
 	}
+	else if (this->operation == "MUX") {
+		statement = this->operation + "2x1" + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
+	}
 	else {
 		statement = this->operation + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
 	}
-	cout << statement << endl;
+	circuitFile << statement << endl;
 }
 
 int Module::getMaxBitWidth()

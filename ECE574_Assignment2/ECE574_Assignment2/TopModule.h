@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "Module.h"
 #include "IOWire.h"
 
@@ -24,10 +25,10 @@ class TopModule {
 		IOWire* TopModule::findInputWire(string wireName);
 		IOWire* TopModule::findOutputWire(string wireName);
 
-		void TopModule::printInputs();
-		void TopModule::printOutputs();
-		void TopModule::printWires();
-		void TopModule::printModuleName();
-		void TopModule::printModules();
+		void TopModule::printInputs(ofstream& circuitFile);
+		void TopModule::printOutputs(ofstream& circuitFile);
+		void TopModule::printWires(ofstream& circuitFile);
+		void TopModule::printModuleName(ofstream& circuitFile, string CircuitName);
+		void TopModule::printModules(ofstream& circuitFile);
 
 };

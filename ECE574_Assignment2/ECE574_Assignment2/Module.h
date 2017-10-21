@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 #include "IOWire.h"
 
 class IOWire;
@@ -29,5 +30,5 @@ class Module
 		float Module::getDelay();
 		int Module::getMaxBitWidth();
 		void Module::PrintModule();
-		void Module::PrintModuleStatement(int moduleNum);
+		void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum);
 };
