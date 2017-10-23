@@ -5,6 +5,7 @@ TopModule::TopModule()
 	this->inputs = vector<IOWire>(0);
 	this->outputs = vector<IOWire>(0);
 	this->wires = vector<IOWire>(0);
+	this->registers = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
 }
 
@@ -23,6 +24,12 @@ void TopModule::setOutputs(vector<IOWire> outputs)
 void TopModule::setWires(vector<IOWire> wires)
 {
 	this->wires.insert(this->wires.end(), wires.begin(), wires.end());
+	return;
+}
+
+void TopModule::setRegisters(vector<IOWire> registers)
+{
+	this->registers.insert(this->registers.end(), registers.begin(), registers.end());
 	return;
 }
 
@@ -110,6 +117,16 @@ void TopModule::printWires(ofstream& circuitFile)
 	for (i = 0; i < this->wires.size(); i++)
 	{
 		circuitFile << "\twire " << this->wires.at(i).printIOWire() << ";" << endl;
+	}
+}
+
+void TopModule::printRegisters(ofstream & circuitFile)
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->registers.size(); i++)
+	{
+		circuitFile << "\registers " << this->registers.at(i).printIOWire() << ";" << endl;
 	}
 }
 

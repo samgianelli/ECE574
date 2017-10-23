@@ -9,7 +9,7 @@ Module::Module()
 	this->maxBitWidth = 0;
 }
 
-Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float delay)
+Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency)
 {
 	cout << "In module overloaded constructor" << endl;
 	cout << "Creating " << operation << " module" << endl;
@@ -19,13 +19,13 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float d
 	this->operation = operation;
 	this->inputs = inputs;
 	this->output = output;
-	this->delay = delay;
+	tempMaxBitWidth = this->output->getBitWidth();
 
 	int i = 0;
 	for (i = 0; i < inputs.size(); i++)
 	{
 		this->inputs.at(i)->addNext(this);
-		if (inputs.at(i)->getBitWidth() > tempMaxBitWidth) {
+		if ((inputs.at(i)->getBitWidth() > tempMaxBitWidth) && (operation == "GT" || operation == "LT" || operation == "EQ")) {
 			tempMaxBitWidth = inputs.at(i)->getBitWidth();
 		}
 	}
@@ -35,6 +35,27 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float d
 
 	this->output->setPrev(this);
 	this->maxBitWidth = tempMaxBitWidth;
+	this->delay = calculateDelay(latency);
+	cout << this->operation << " Created Module with bitwidth: " << this->maxBitWidth << " and latency: " << this->delay << endl;
+}
+
+double Module::calculateDelay(vector<double> latency) {
+	switch (this->maxBitWidth) {
+	case 1:
+		return latency.at(0);
+	case 2:
+		return latency.at(1);
+	case 8:
+		return latency.at(2);
+	case 16:
+		return latency.at(3);
+	case 32:
+		return latency.at(4);
+	case 64:
+		return latency.at(5);
+	default:
+		return 200;
+	}
 }
 
 string Module::getOperation()
@@ -52,7 +73,7 @@ IOWire* Module::getOutputs()
 	return this->output;
 }
 
-float Module::getDelay()
+double Module::getDelay()
 {
 	return this->delay;
 }

@@ -17,17 +17,18 @@ class Module
 		string operation;
 		vector<IOWire*> inputs;
 		IOWire* output;
-		float delay;
+		double delay;
 		int maxBitWidth;
 
 	public:
 		Module::Module();
-		Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, float delay);
+		Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency);
 
+		double Module::calculateDelay(vector<double> latency);
 		string Module::getOperation();
 		vector<IOWire*> Module::getInputs();
 		IOWire* Module::getOutputs();
-		float Module::getDelay();
+		double Module::getDelay();
 		int Module::getMaxBitWidth();
 		void Module::PrintModule();
 		void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum);

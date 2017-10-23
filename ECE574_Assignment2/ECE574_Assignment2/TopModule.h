@@ -15,12 +15,14 @@ class TopModule {
 		vector<IOWire> inputs;
 		vector<IOWire> outputs;
 		vector<IOWire> wires;
+		vector<IOWire> registers;
 
 		TopModule::TopModule();
 
 		void TopModule::setInputs(vector<IOWire> inputs);
 		void TopModule::setOutputs(vector<IOWire> outputs);
 		void TopModule::setWires(vector<IOWire> wires);
+		void TopModule::setRegisters(vector<IOWire> registers);
 		void TopModule::addModule(Module module);
 		IOWire* TopModule::findInputWire(string wireName);
 		IOWire* TopModule::findOutputWire(string wireName);
@@ -28,6 +30,7 @@ class TopModule {
 		void TopModule::printInputs(ofstream& circuitFile);
 		void TopModule::printOutputs(ofstream& circuitFile);
 		void TopModule::printWires(ofstream& circuitFile);
+		void TopModule::printRegisters(ofstream& circuitFile);
 		void TopModule::printModuleName(ofstream& circuitFile, string CircuitName);
 		void TopModule::printModules(ofstream& circuitFile);
 
