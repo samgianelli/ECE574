@@ -13,7 +13,7 @@ void writeToFile(string circuitName, TopModule *topModule);
 int main() // Will add input arguments in at end of project
 {
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
-	vector<string> circuits = { "574a_circuit8" };
+	vector<string> circuits = { "474a_circuit5" };
 	map<string, vector<double>> m;
 	m["REG"] = { 2.616, 2.644, 2.879, 3.061, 3.602, 3.966 };
 	m["ADD"] = { 2.704, 3.713, 4.924, 5.638, 7.270, 9.566 };
@@ -60,8 +60,10 @@ int main() // Will add input arguments in at end of project
 			else { break; }
 		}
 
+		topModule->findCriticalPath();
+
 		// Write to the .v file
-		writeToFile(circuitName, topModule);
+		//writeToFile(circuitName, topModule);
 	}
 }
 

@@ -167,3 +167,55 @@ void TopModule::printModules(ofstream& circuitFile) {
 	}
 
 }
+
+float TopModule::findInputDelay(Module module)
+{
+	vector<float> inputDelays;
+	unsigned int i = 0;
+
+	for (i = 0; i < module.getInputs().size(); i++)
+	{
+		if (module.getInputs().at(i)->prev == NULL)
+		{
+			inputDelays.push_back(0);
+		}
+		else {
+			inputDelays.push_back(findInputDelay(*module.getInputs().at(i)->prev));
+		}
+	}
+
+	float largestDelay = 0;
+	for (i = 0; i < inputDelays.size(); i++)
+	{
+		if (inputDelays.at(i) > largestDelay)
+		{
+			largestDelay = inputDelays.at(i);
+		}
+	}
+
+	return largestDelay + module.getDelay();
+}
+
+void TopModule::findCriticalPath()
+{
+	vector<Module> outputModules;
+	float totalDelay = 0;
+	unsigned int i = 0;
+
+	for (i = 0; i < this->outputs.size(); i++)
+	{
+		outputModules.push_back(*this->outputs.at(i).prev);
+	}
+
+	for (i = 0; i < outputModules.size(); i++)
+	{
+		float delay = findInputDelay(outputModules.at(i));
+		if (delay > totalDelay)
+		{
+			totalDelay = delay;
+		}
+	}
+
+	cout << "$$$$$$$$$$ CRITICAL PATH : " << totalDelay << "  $$$$$$$$$$$$$$" << endl;
+	//return totalDelay;
+}

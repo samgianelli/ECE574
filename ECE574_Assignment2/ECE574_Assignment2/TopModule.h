@@ -34,4 +34,7 @@ class TopModule {
 		void TopModule::printModuleName(ofstream& circuitFile, string CircuitName);
 		void TopModule::printModules(ofstream& circuitFile);
 
+		float TopModule::findInputDelay(Module module);
+		void TopModule::findCriticalPath();
+
 };
