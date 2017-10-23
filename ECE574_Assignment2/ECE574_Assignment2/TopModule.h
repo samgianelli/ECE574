@@ -26,11 +26,13 @@ class TopModule {
 		void TopModule::addModule(Module module);
 		IOWire* TopModule::findInputWire(string wireName);
 		IOWire* TopModule::findOutputWire(string wireName);
+		IOWire* TopModule::findOutputRegister(string wireName);
 
 		void TopModule::printInputs(ofstream& circuitFile);
 		void TopModule::printOutputs(ofstream& circuitFile);
 		void TopModule::printWires(ofstream& circuitFile);
 		void TopModule::printRegisters(ofstream& circuitFile);
+		void TopModule::addWire(IOWire& wire);
 		void TopModule::printModuleName(ofstream& circuitFile, string CircuitName);
 		void TopModule::printModules(ofstream& circuitFile);
 

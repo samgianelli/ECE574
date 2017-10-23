@@ -19,6 +19,12 @@ void Parser::parseLine(string line, TopModule * topModule, map<string, vector<do
 	{
 		topModule->setWires(Parser::parseWire(line));
 	}
+	else if (identifier.compare(REGISTER) == 0) 
+	{
+		topModule->setRegisters(Parser::parseRegister(line));
+		topModule->setWires(Parser::parseRegister(line));
+
+	}
 	//All other lines must be operators, filter out whitespace and comments
 	else if (identifier.compare(EMPTY) != 0 && identifier.substr(0,2).compare(COMMENT) != 0)
 	{
@@ -104,6 +110,32 @@ vector<IOWire> Parser::parseWire(string wireString)
 	return wires;
 }
 
+vector<IOWire> Parser::parseRegister(string registerString)
+{
+	cout << "test register: " << registerString << endl;
+
+	stringstream registerStream(registerString);
+	vector<IOWire> registers;
+	IOWire bufferWire;
+	string bufferName;
+	string type;
+	string dummy;
+
+	registerStream >> dummy >> type;
+
+	while (registerStream >> bufferName)
+	{
+		// if statement removes commas between wires
+		if (!isalnum(bufferName.back()))
+		{
+			bufferName = bufferName.substr(0, bufferName.length() - 1);
+		}
+		bufferWire = IOWire::IOWire(bufferName, type);
+		registers.push_back(bufferWire);
+	}
+	return registers;
+}
+
 Module Parser::parseOperation(string operationString, TopModule &topModule, map<string, vector<double>> m)
 {
 	//d = a + b
@@ -116,8 +148,9 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 	vector<string> inputs;
 	std::vector<IOWire*> inputWires;
 	IOWire* outputWire;
+	IOWire* outputWire2;
 	std::stringstream ss(operationString);
-	Module *opModule;
+	Module *opModule = NULL;
 	
 	ss >> outputChar >> dummy >> inputChar1 >> operatorChar >> inputChar2 >> dummy >> inputChar3;
 
@@ -125,6 +158,70 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 	if (inputChar2.compare("\0") != 0 && inputChar2.compare("1") != 0) { inputWires.push_back(topModule.findInputWire(inputChar2)); }
 	if (inputChar3.compare("\0") != 0) { inputWires.push_back(topModule.findInputWire(inputChar3)); }
 	
+	outputWire = topModule.findOutputRegister(outputChar);
+	if (outputWire != NULL) {
+		if (operatorChar.compare("\0") == 0) {
+			outputWire = topModule.findOutputWire(outputChar);
+			opModule = new Module("REG", inputWires, outputWire, m["REG"]);
+			return *opModule;
+		}
+		else {
+			outputWire2 = new IOWire(outputWire->getName() + "_0", outputWire->getType());
+			
+			if (operatorChar.compare(ADD) == 0) {
+				if (inputChar2 == "1") {
+					opModule = new Module("INC", inputWires, outputWire2, m["INC"]);
+				}
+				else {
+					opModule = new Module("ADD", inputWires, outputWire2, m["ADD"]);
+				}
+			}
+			else if (operatorChar.compare(SUB) == 0) {
+				if (inputChar2 == "1") {
+					opModule = new Module("DEC", inputWires, outputWire2, m["DEC"]);
+				}
+				else {
+					opModule = new Module("SUB", inputWires, outputWire2, m["SUB"]);
+				}
+			}
+			else if (operatorChar.compare(MUL) == 0) {
+				opModule = new Module("MUL", inputWires, outputWire2, m["MUL"]);
+			}
+			else if (operatorChar.compare(GT) == 0) {
+				opModule = new Module("GT", inputWires, outputWire2, m["COMP"]);
+			}
+			else if (operatorChar.compare(LT) == 0) {
+				opModule = new Module("LT", inputWires, outputWire2, m["COMP"]);
+			}
+			else if (operatorChar.compare(EQ) == 0) {
+				opModule = new Module("EQ", inputWires, outputWire2, m["COMP"]);
+			}
+			else if (operatorChar.compare(SEL) == 0) {
+				opModule = new Module("MUX", inputWires, outputWire2, m["MUX"]);
+			}
+			else if (operatorChar.compare(SHR) == 0) {
+				opModule = new Module("SHR", inputWires, outputWire2, m["SHR"]);
+			}
+			else if (operatorChar.compare(SHL) == 0) {
+				opModule = new Module("SHL", inputWires, outputWire2, m["SHL"]);
+			}
+			else if (operatorChar.compare(DIV) == 0) {
+				opModule = new Module("DIV", inputWires, outputWire2, m["DIV"]);
+			}
+			else if (operatorChar.compare(MOD) == 0) {
+				opModule = new Module("MOD", inputWires, outputWire2, m["MOD"]);
+			}
+//			outputWire2->setPrev(opModule);
+			topModule.addModule(*opModule);
+			outputWire = topModule.findOutputWire(outputChar);
+			vector<IOWire*> temp;
+			temp.push_back(outputWire2);
+			opModule = new Module("REG", temp, outputWire, m["REG"]);
+//			outputWire2->addNext(opModule);
+			topModule.addWire(*outputWire2);
+			return *opModule;
+		}
+	}
 	outputWire = topModule.findOutputWire(outputChar);
 
 	if (operatorChar.compare(ADD) == 0) {
@@ -171,7 +268,10 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 		opModule = new Module("MOD", inputWires, outputWire, m["MOD"]);
 	}
 	else  {
-		opModule = new Module("REG", inputWires, outputWire, m["REG"]);   // TODO: Find Reg latency
+		opModule = new Module("REG", inputWires, outputWire, m["REG"]); 
 	}
+
+
+
 	return *opModule;
 }

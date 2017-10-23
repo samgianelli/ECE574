@@ -88,6 +88,22 @@ IOWire* TopModule::findOutputWire(string wireName)
 	return new IOWire();
 }
 
+IOWire* TopModule::findOutputRegister(string wireName)
+{
+	unsigned int i = 0;
+
+	for (i = 0; i < this->registers.size(); i++)
+	{
+		if (this->registers.at(i).getName().compare(wireName) == 0)
+		{
+			return &(this->registers.at(i));
+		}
+	}
+	//cout << "No Module register found for: " << wireName << endl;
+
+	return NULL;
+}
+
 void TopModule::printInputs(ofstream& circuitFile)
 {
 	unsigned int i = 0;
@@ -128,6 +144,11 @@ void TopModule::printRegisters(ofstream & circuitFile)
 	{
 		circuitFile << "\registers " << this->registers.at(i).printIOWire() << ";" << endl;
 	}
+}
+
+void TopModule::addWire(IOWire& wire)
+{
+	this->wires.push_back(wire);
 }
 
 void TopModule::printModuleName(ofstream& circuitFile, string CircuitName)

@@ -40,5 +40,6 @@ class Parser
 		static vector<IOWire> parseInput(string inputString);
 		static vector<IOWire> parseOutput(string outputString);
 		static vector<IOWire> parseWire(string wireString);
+		static vector<IOWire> parseRegister(string registerString);
 		static Module parseOperation(string operationString, TopModule &topModule, map<string, vector<double>> m);
 };

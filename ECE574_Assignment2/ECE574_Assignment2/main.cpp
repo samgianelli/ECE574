@@ -63,7 +63,7 @@ int main() // Will add input arguments in at end of project
 		topModule->findCriticalPath();
 
 		// Write to the .v file
-		//writeToFile(circuitName, topModule);
+		writeToFile(circuitName, topModule);
 	}
 }
 
