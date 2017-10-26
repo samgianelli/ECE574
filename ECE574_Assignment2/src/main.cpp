@@ -10,8 +10,17 @@ using namespace std;
 vector<string> readNetlist(string fileName);
 void writeToFile(string circuitName, TopModule *topModule);
 
-int main() // Will add input arguments in at end of project
+int main(int argc, char* argv[]) // Will add input arguments in at end of project
 {
+	if (argc != 3)
+	{
+		cout << "Error, incorrect number of input arguments." << endl << endl;
+		cout << "Usage: dpgen netlistFile verilogFile" << endl;
+		cout << "\tnetlistFile - The path to the netlist you wish to convert." << endl;
+		cout << "\tverilogFile - The path to for the output verilogFile" << endl;
+		return 0;
+	}
+
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
 	vector<string> circuits = { "474a_circuit5" };
 	map<string, vector<double>> m;
@@ -64,6 +73,7 @@ int main() // Will add input arguments in at end of project
 
 		// Write to the .v file
 		writeToFile(circuitName, topModule);
+
 	}
 }
 
