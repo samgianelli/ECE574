@@ -1,6 +1,15 @@
-Author: 	Diego Jimenez
-NetID: 	diegojimenez
-Date: 	4/12/16
-Assignment: #4
+1) Name and NetIDs
+Eddie Richter - edwardrichter
+Sam Gianelli  - samjgianelli
+Diego Jimenez - diegojimenez
+Hugo Valdez   - hugovaldez
 
-This contains project 4: trending. In this assignment there are source files as well as CMake files. 
+2) Course
+Eddie Richter - 474a
+Sam Gianelli  - 574a
+Diego Jimenez - 474a
+Hugo Valdez   - 474a
+
+3) Brief Description
+
+4) Individual Contributions
