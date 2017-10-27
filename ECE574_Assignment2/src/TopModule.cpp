@@ -60,7 +60,7 @@ IOWire* TopModule::findInputWire(string wireName)
 
 	cout << "No Module input found for: " << wireName << endl;
 
-	return new IOWire();
+	return NULL;
 }
 
 IOWire* TopModule::findOutputWire(string wireName)
@@ -85,7 +85,7 @@ IOWire* TopModule::findOutputWire(string wireName)
 
 	cout << "No Module output found for: " << wireName << endl;
 
-	return new IOWire();
+	return NULL;
 }
 
 IOWire* TopModule::findOutputRegister(string wireName)
@@ -189,9 +189,9 @@ void TopModule::printModules(ofstream& circuitFile) {
 
 }
 
-float TopModule::findInputDelay(Module module)
+double TopModule::findInputDelay(Module module)
 {
-	vector<float> inputDelays;
+	vector<double> inputDelays;
 	unsigned int i = 0;
 
 	for (i = 0; i < module.getInputs().size(); i++)
@@ -205,7 +205,7 @@ float TopModule::findInputDelay(Module module)
 		}
 	}
 
-	float largestDelay = 0;
+	double largestDelay = 0;
 	for (i = 0; i < inputDelays.size(); i++)
 	{
 		if (inputDelays.at(i) > largestDelay)
@@ -220,7 +220,7 @@ float TopModule::findInputDelay(Module module)
 void TopModule::findCriticalPath()
 {
 	vector<Module> outputModules;
-	float totalDelay = 0;
+	double totalDelay = 0;
 	unsigned int i = 0;
 
 	for (i = 0; i < this->outputs.size(); i++)
@@ -231,7 +231,7 @@ void TopModule::findCriticalPath()
 	for (i = 0; i < outputModules.size(); i++)
 	{
 		cout << "Critical path for output " << i << endl;
-		float delay = findInputDelay(outputModules.at(i));
+		double delay = findInputDelay(outputModules.at(i));
 		if (delay > totalDelay)
 		{
 			totalDelay = delay;

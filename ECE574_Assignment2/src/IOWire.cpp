@@ -7,6 +7,7 @@ IOWire::IOWire()
 	this->prev = NULL;
 	this->bitWidth = 0;
 	this->next = vector<Module*>();
+	this->isSigned = false;
 }
 
 IOWire::IOWire(string name, string type)
@@ -14,9 +15,18 @@ IOWire::IOWire(string name, string type)
 	string intString = "";
 	stringstream ss;
 	int bitWidth = 0;
-	if (type.find("Int") != std::string::npos) { // Checking to see if it is an int. Not sure if there are other types
+	
+	if (type.find("UInt") != std::string::npos) 
+	{
+		intString = type.substr(4, type.length());
+		bitWidth = stoi(intString);
+		this->isSigned = false;
+	}
+	else if (type.find("Int") != std::string::npos) 
+	{
 		intString = type.substr(3, type.length());
 		bitWidth = stoi(intString);
+		this->isSigned = true;
 	}
 
 	this->name = name;
@@ -62,9 +72,15 @@ int IOWire::getBitWidth()
 
 string IOWire::printIOWire()
 {
+	string retString = "";
 
-	string retString = this->printBitWidth() + " " + this->name;
-
+	if (this->isSigned)
+	{
+		retString = "signed " + this->printBitWidth() + " " + this->name;
+	}
+	else {
+		retString = this->printBitWidth() + " " + this->name;
+	}
 	//ret_string += "Prev Module: " + prev->getOperation() + "\tNext Module: " + next.at(0)->getOperation();
 	//cout << "Name: " + this->name + "\tType: " + this->type << endl;
 	//cout << "Prev Module: " << prev->getOperation() << "\tNext Module: " << next.at(0)->getOperation();
@@ -87,4 +103,9 @@ string IOWire::printBitWidth()
 	}
 
 	return ss.str();
+}
+
+bool IOWire::getSigned()
+{
+	return this->isSigned;
 }

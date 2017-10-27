@@ -7,6 +7,17 @@ Module::Module()
 	this->output = new IOWire();
 	this->delay = 0;
 	this->maxBitWidth = 0;
+	this->isSigned = false;
+}
+
+Module::Module(string operation) 
+{
+	this->operation = operation;
+	this->inputs = vector<IOWire*>(0);
+	this->output = new IOWire();
+	this->delay = 0;
+	this->maxBitWidth = 0;
+	this->isSigned = false;
 }
 
 Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency)
@@ -15,13 +26,21 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<
 	cout << "Creating " << operation << " module" << endl;
 	
 	int tempMaxBitWidth = 0;
+	unsigned int i = 0;
+
 
 	this->operation = operation;
 	this->inputs = inputs;
 	this->output = output;
+	this->isSigned = false;
 	tempMaxBitWidth = this->output->getBitWidth();
 
-	unsigned int i = 0;
+	for (i = 0; i < inputs.size(); i++) // Will set the isUnsigned equal to true of any input or output is unsigned
+	{
+		this->isSigned |= inputs.at(i)->getSigned();
+	}
+	this->isSigned |= output->getSigned();
+
 	for (i = 0; i < inputs.size(); i++)
 	{
 		this->inputs.at(i)->addNext(this);
@@ -87,7 +106,7 @@ void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum)
 {
 	string inputs;
 	string output;
-	string statement; 
+	string statement = ""; 
 	unsigned int i = 0;
 	
 	// Parse/Format input names
@@ -102,26 +121,30 @@ void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum)
 
 	// Pars/Format output name
 	output = this->output->getName();
+	if (this->isSigned) 
+	{
+		statement = "S";
+	}
 
 	// Format final output statement
 	// All of the hardcoded things because programming is hard
 	if (this->operation == "GT") {
-		statement = "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ", , );";
+		statement += "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ", , );";
 	}
 	else if (this->operation == "LT") {
-		statement = "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", ," + output + ", );";
+		statement += "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", ," + output + ", );";
 	}
 	else if (this->operation == "EQ") {
-		statement = "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", , ," + output + ");";
+		statement += "COMP #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", , ," + output + ");";
 	}
 	else if (this->operation == "REG") {
-		statement = "REG #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", clk, rst, " + output + ");";
+		statement += "REG #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", clk, rst, " + output + ");";
 	}
 	else if (this->operation == "MUX") {
-		statement = this->operation + "2x1" + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
+		statement += this->operation + "2x1" + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
 	}
 	else {
-		statement = this->operation + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
+		statement += this->operation + " #(" + to_string(this->getMaxBitWidth()) + ")" + this->operation + "_" + to_string(moduleNum) + "(" + inputs + ", " + output + ");";
 	}
 	circuitFile << statement << endl;
 }
@@ -129,4 +152,9 @@ void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum)
 int Module::getMaxBitWidth()
 {
 	return this->maxBitWidth;
+}
+
+void Module::setOperation(string operation)
+{
+	this->operation = operation;
 }

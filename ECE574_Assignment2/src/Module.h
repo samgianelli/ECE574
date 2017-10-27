@@ -19,9 +19,11 @@ class Module
 		IOWire* output;
 		double delay;
 		int maxBitWidth;
+		bool isSigned;
 
 	public:
 		Module();
+		Module(string operation);
 		Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency);
 
 		double calculateDelay(vector<double> latency);
@@ -32,4 +34,5 @@ class Module
 		int getMaxBitWidth();
 		void PrintModule();
 		void PrintModuleStatement(ofstream& circuitFile, int moduleNum);
+		void setOperation(string operation);
 };

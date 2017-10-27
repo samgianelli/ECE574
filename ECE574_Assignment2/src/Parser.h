@@ -27,6 +27,8 @@
 #define SHL "<<"
 #define DIV "/"
 #define MOD "%"
+#define REG ""
+#define ERROR "ERROR"
 
 
 using namespace std;
@@ -36,7 +38,7 @@ class Parser
 	private:
 
 	public:
-		static void parseLine(string line, TopModule *topModule, map<string, vector<double>> m);
+		static int parseLine(string line, TopModule *topModule, map<string, vector<double>> m);
 		static vector<IOWire> parseInput(string inputString);
 		static vector<IOWire> parseOutput(string outputString);
 		static vector<IOWire> parseWire(string wireString);

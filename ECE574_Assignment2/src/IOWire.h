@@ -15,6 +15,7 @@ class IOWire {
 		string name;
 		string type;
 		int bitWidth;
+		bool isSigned;
 		
 
 	public:
@@ -30,6 +31,7 @@ class IOWire {
 		string getName();
 		string getType();
 		int getBitWidth();
+		bool getSigned();
 
 		string printIOWire();
 		string printBitWidth();

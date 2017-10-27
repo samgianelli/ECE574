@@ -36,7 +36,7 @@ class TopModule {
 		void printModuleName(ofstream& circuitFile, string CircuitName);
 		void printModules(ofstream& circuitFile);
 
-		float findInputDelay(Module module);
+		double findInputDelay(Module module);
 		void findCriticalPath();
 
 };

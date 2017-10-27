@@ -1,9 +1,10 @@
 #include "Parser.h"
 
-void Parser::parseLine(string line, TopModule * topModule, map<string, vector<double>> m)
+int Parser::parseLine(string line, TopModule * topModule, map<string, vector<double>> m)
 {
 	istringstream lineStream(line);
 	string identifier;
+	Module *temp = new Module();
 
 	lineStream >> identifier;
 	
@@ -28,8 +29,19 @@ void Parser::parseLine(string line, TopModule * topModule, map<string, vector<do
 	//All other lines must be operators, filter out whitespace and comments
 	else if (identifier.compare(EMPTY) != 0 && identifier.substr(0,2).compare(COMMENT) != 0)
 	{
-		topModule->addModule(Parser::parseOperation(line, *topModule, m));
+		*temp = Parser::parseOperation(line, *topModule, m);
+		cout << "Temp is: " << temp->getOperation() << endl;
+		if (temp->getOperation().compare(ERROR) == 0) {
+			cout << "Error in parseLine" << endl;
+			return -1; // report error
+		}
+		else {
+			topModule->addModule(*temp);
+		}
+		
 	}
+
+	return 0; // return no error
 }
 
 vector<IOWire> Parser::parseInput(string inputString)
@@ -149,14 +161,31 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 	std::vector<IOWire*> inputWires;
 	IOWire* outputWire;
 	IOWire* outputWire2;
+	IOWire* tempInput = NULL;
 	std::stringstream ss(operationString);
 	Module *opModule = NULL;
 	
 	ss >> outputChar >> dummy >> inputChar1 >> operatorChar >> inputChar2 >> dummy >> inputChar3;
 
 	inputWires.push_back(topModule.findInputWire(inputChar1));
-	if (inputChar2.compare("\0") != 0 && inputChar2.compare("1") != 0) { inputWires.push_back(topModule.findInputWire(inputChar2)); }
-	if (inputChar3.compare("\0") != 0) { inputWires.push_back(topModule.findInputWire(inputChar3)); }
+	if (inputChar2.compare("\0") != 0 && inputChar2.compare("1") != 0) 
+	{ 
+		tempInput = topModule.findInputWire(inputChar2);
+		if (tempInput == NULL) {
+			opModule = new Module("ERROR"); // This was easier than messing with what the function returned
+			return *opModule;
+		}
+		inputWires.push_back(tempInput); 
+	}
+	if (inputChar3.compare("\0") != 0) 
+	{ 
+		tempInput = topModule.findInputWire(inputChar2);
+		if (tempInput == NULL) {
+			opModule = new Module("ERROR"); // This was easier than messing with what the function returned
+			return *opModule;
+		}
+		inputWires.push_back(tempInput); 
+	}
 	
 	outputWire = topModule.findOutputRegister(outputChar);
 	if (outputWire != NULL) {
@@ -223,7 +252,11 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 		}
 	}
 	outputWire = topModule.findOutputWire(outputChar);
-
+	if (outputWire == NULL) {
+		cout << "WARNING: OUTPUT OR WIRE NOT IN OUTPUT OF MODULE" << endl;
+		opModule = new Module("ERROR"); // This was easier than messing with what the function returned
+		return *opModule;
+	}
 	if (operatorChar.compare(ADD) == 0) {
 		if (inputChar2 == "1") {
 			opModule = new Module("INC", inputWires, outputWire, m["INC"]);
@@ -267,8 +300,12 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 	else if(operatorChar.compare(MOD) == 0) {
 		opModule = new Module("MOD", inputWires, outputWire, m["MOD"]);
 	}
-	else  {
+	else if(operatorChar.compare(REG) == 0) {
 		opModule = new Module("REG", inputWires, outputWire, m["REG"]); 
+	}
+	else {
+		cout << "** Unrecognized computation **" << endl;
+		opModule = new Module("ERROR"); // This was easier than messing with what the function returned
 	}
 
 

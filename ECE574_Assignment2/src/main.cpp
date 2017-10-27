@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 	}
 
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
-	vector<string> circuits = { "474a_circuit5" };
+	vector<string> circuits = { "mixedcircuit3" };
 	map<string, vector<double>> m;
 	m["REG"] = { 2.616, 2.644, 2.879, 3.061, 3.602, 3.966 };
 	m["ADD"] = { 2.704, 3.713, 4.924, 5.638, 7.270, 9.566 };
@@ -42,10 +42,17 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 		vector<string> netlistContents;
 		TopModule *topModule = new TopModule();
 		netlistContents = readNetlist(circuitName + ".txt");
+		if (netlistContents.size() == 0) {
+			cout << "Cannot open file or empty file: " << circuitName << ".txt" << endl;
+			return 1;
+		}
 
 		for (i = 0; i < netlistContents.size(); i++)
 		{
-			Parser::parseLine(netlistContents.at(i), topModule, m);
+			if (Parser::parseLine(netlistContents.at(i), topModule, m) == -1) {
+				cout << "Error: Couldn't parse a line. Check the netlist for errors. Exiting." << endl;
+				return 1;
+			}
 		}
 
 		for (i = 0; i < topModule->wires.size(); i++)
@@ -91,9 +98,7 @@ vector<string> readNetlist(string fileName)
 			netlistContents.push_back(line);
 		}
 		netlistFile.close();
-	}
-
-	else cout << "Cannot open file: " << fileName << endl;
+	} 
 
 	return netlistContents;
 }
