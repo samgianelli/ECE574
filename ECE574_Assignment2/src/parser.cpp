@@ -30,7 +30,7 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 	else if (identifier.compare(EMPTY) != 0 && identifier.substr(0,2).compare(COMMENT) != 0)
 	{
 		*temp = Parser::parseOperation(line, *topModule, m);
-		cout << "Temp is: " << temp->getOperation() << endl;
+		//cout << "Temp is: " << temp->getOperation() << endl;
 		if (temp->getOperation().compare(ERROR) == 0) {
 			cout << "Error in parseLine" << endl;
 			return -1; // report error
@@ -46,7 +46,7 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 
 vector<IOWire> Parser::parseInput(string inputString)
 {
-	cout << "test input: " << inputString << endl;
+	//cout << "test input: " << inputString << endl;
 	
 	stringstream inputStream(inputString);
 	vector<IOWire> inputs;
@@ -72,7 +72,7 @@ vector<IOWire> Parser::parseInput(string inputString)
 
 vector<IOWire> Parser::parseOutput(string outputString)
 {
-	cout << "test output: " << outputString << endl;
+	//cout << "test output: " << outputString << endl;
 
 	stringstream outputStream(outputString);
 	vector<IOWire> outputs;
@@ -98,7 +98,7 @@ vector<IOWire> Parser::parseOutput(string outputString)
 
 vector<IOWire> Parser::parseWire(string wireString)
 {
-	cout << "test wire: " << wireString << endl;
+	//cout << "test wire: " << wireString << endl;
 
 	stringstream wireStream(wireString);
 	vector<IOWire> wires;
@@ -124,7 +124,7 @@ vector<IOWire> Parser::parseWire(string wireString)
 
 vector<IOWire> Parser::parseRegister(string registerString)
 {
-	cout << "test register: " << registerString << endl;
+	//cout << "test register: " << registerString << endl;
 
 	stringstream registerStream(registerString);
 	vector<IOWire> registers;
@@ -253,7 +253,7 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 	}
 	outputWire = topModule.findOutputWire(outputChar);
 	if (outputWire == NULL) {
-		cout << "WARNING: OUTPUT OR WIRE NOT IN OUTPUT OF MODULE" << endl;
+		//cout << "WARNING: OUTPUT OR WIRE NOT IN OUTPUT OF MODULE" << endl;
 		opModule = new Module("ERROR"); // This was easier than messing with what the function returned
 		return *opModule;
 	}
@@ -304,7 +304,7 @@ Module Parser::parseOperation(string operationString, TopModule &topModule, map<
 		opModule = new Module("REG", inputWires, outputWire, m["REG"]); 
 	}
 	else {
-		cout << "** Unrecognized computation **" << endl;
+		//cout << "** Unrecognized computation **" << endl;
 		opModule = new Module("ERROR"); // This was easier than messing with what the function returned
 	}
 

@@ -58,7 +58,7 @@ IOWire* TopModule::findInputWire(string wireName)
 		}
 	}
 
-	cout << "No Module input found for: " << wireName << endl;
+	//cout << "No Module input found for: " << wireName << endl;
 
 	return NULL;
 }
@@ -83,7 +83,7 @@ IOWire* TopModule::findOutputWire(string wireName)
 		}
 	}
 
-	cout << "No Module output found for: " << wireName << endl;
+	//cout << "No Module output found for: " << wireName << endl;
 
 	return NULL;
 }
@@ -210,7 +210,7 @@ double TopModule::findInputDelay(Module module)
 	{
 		if (inputDelays.at(i) > largestDelay)
 		{
-			cout << inputDelays.at(i) << endl;
+			//cout << inputDelays.at(i) << endl;
 			largestDelay = inputDelays.at(i);
 		}
 	}
@@ -230,7 +230,7 @@ void TopModule::findCriticalPath()
 
 	for (i = 0; i < outputModules.size(); i++)
 	{
-		cout << "Critical path for output " << i << endl;
+		//cout << "Critical path for output " << i << endl;
 		double delay = findInputDelay(outputModules.at(i));
 		if (delay > totalDelay)
 		{
@@ -238,6 +238,6 @@ void TopModule::findCriticalPath()
 		}
 	}
 
-	cout << "$$$$$$$$$$ CRITICAL PATH : " << totalDelay << "  $$$$$$$$$$$$$$" << endl;
+	cout << "Critical Path : " << totalDelay << " ns" << endl;
 	//return totalDelay;
 }

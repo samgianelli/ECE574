@@ -55,27 +55,8 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 			}
 		}
 
-		for (i = 0; i < topModule->wires.size(); i++)
-		{
-			//cout << topModule->wires.at(i).next->getOperation() << endl;
-			// TODO Fix, this was causing a crash with circuit 3
-			if (topModule->wires.at(i).next.at(0) == NULL)
-			{
-				cout << "NULL NULL NULLY NULL" << endl;
-			}
-		}
-
-		cout << "*******" << topModule->wires.size() << endl;
-		//TODO: Ensure we can traverse the graph
-		Module *temp = new Module();
-		temp = &(topModule->modules.at(1));
-		while (temp != NULL)
-		{
-			temp->PrintModule();
-			if (temp->getOutputs()->next.size() > 0) { temp = temp->getOutputs()->next.at(0); }
-			else { break; }
-		}
-
+		//Module *temp = new Module();
+		//temp = &(topModule->modules.at(1));
 		topModule->findCriticalPath();
 
 		// Write to the .v file
@@ -86,7 +67,7 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 
 vector<string> readNetlist(string fileName)
 {
-	string filePath = "../assignment 2 circuits/" + fileName;
+	string filePath = fileName;
 	ifstream netlistFile(filePath);
 	vector<string> netlistContents;
 	string line;
@@ -106,7 +87,7 @@ vector<string> readNetlist(string fileName)
 void writeToFile(string circuitName, TopModule *topModule) {
 	ofstream circuitFile;
 	circuitFile.open(circuitName);
-	cout << endl << endl;
+	//cout << endl << endl;
 	topModule->printModuleName(circuitFile, circuitName.substr(0, circuitName.size() - 2));
 	topModule->printInputs(circuitFile);
 	topModule->printOutputs(circuitFile);

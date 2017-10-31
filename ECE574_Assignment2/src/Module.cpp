@@ -22,8 +22,8 @@ Module::Module(string operation)
 
 Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency)
 {
-	cout << "In module overloaded constructor" << endl;
-	cout << "Creating " << operation << " module" << endl;
+	//cout << "In module overloaded constructor" << endl;
+	//cout << "Creating " << operation << " module" << endl;
 	
 	int tempMaxBitWidth = 0;
 	unsigned int i = 0;
@@ -55,7 +55,7 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<
 	this->output->setPrev(this);
 	this->maxBitWidth = tempMaxBitWidth;
 	this->delay = calculateDelay(latency);
-	cout << this->operation << " Created Module with bitwidth: " << this->maxBitWidth << " and latency: " << this->delay << endl;
+	//cout << this->operation << " Created Module with bitwidth: " << this->maxBitWidth << " and latency: " << this->delay << endl;
 }
 
 double Module::calculateDelay(vector<double> latency) {
