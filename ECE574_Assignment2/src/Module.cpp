@@ -112,7 +112,12 @@ void Module::PrintModuleStatement(ofstream& circuitFile, int moduleNum)
 	// Parse/Format input names
 	for (i = 0; i < this->inputs.size(); i++)
 	{
-		inputs += this->inputs.at(i)->getName() + ", ";
+		if (this->isSigned) {
+			inputs += "$signed(" + this->inputs.at(i)->getName() + "), ";
+		}
+		else {
+			inputs += this->inputs.at(i)->getName() + ", ";
+		}
 	}
 	inputs = inputs.substr(0, inputs.length()-2);
 	if (this->operation == "MUX") {
