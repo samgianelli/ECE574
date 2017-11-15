@@ -274,14 +274,17 @@ void TopModule::asapSchedule()
 				if (this->modules.at(i).getOperation() == "DIV")
 				{
 					this->modules.at(i).setTimeFrame(edge + 3);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge + 3);
 				}
 				else if (this->modules.at(i).getOperation() == "MUL")
 				{
 					this->modules.at(i).setTimeFrame(edge + 2);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge + 2);
 				}
 				else
 				{
 					this->modules.at(i).setTimeFrame(edge + 1);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge + 1);
 				}
 				//unscheduled.erase(unscheduled.begin()+(i-1));
 				}
@@ -323,14 +326,17 @@ void TopModule::calculateTimeFrames()
 			if (this->modules.at(i).getOperation() == "DIV")
 			{
 				this->modules.at(i).setTimeFrame(3);
+				this->modules.at(i).getOutputs()->prev->setTimeFrame(3);
 			}
 			else if (this->modules.at(i).getOperation() == "MUL")
 			{
 				this->modules.at(i).setTimeFrame(2);
+				this->modules.at(i).getOutputs()->prev->setTimeFrame(2);
 			}
 			else
 			{
 				this->modules.at(i).setTimeFrame(1);
+				this->modules.at(i).getOutputs()->prev->setTimeFrame(1);
 			}
 			//unscheduled.erase(unscheduled.begin()+(i-1));
 			u = u - 1;
