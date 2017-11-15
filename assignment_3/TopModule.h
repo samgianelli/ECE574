@@ -38,8 +38,8 @@ class TopModule {
 
 		double findInputDelay(Module module);
 		void findCriticalPath();
-		void calculateTimeFrames();
-		void alapSchedule();
+		void calculateTimeFrames(int latency);
+		void alapSchedule(int latency);
 		void asapSchedule();
 
 };

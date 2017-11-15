@@ -253,20 +253,24 @@ void TopModule::asapSchedule()
 	for (i = 0; i < this->modules.size(); i++)
 	{
 		if (this->modules.at(i).getTimeFrame().size() == 0)
-			{
-				next = true;
+		{
+			next = true;
 			for (j = 0; j < this->modules.at(i).getInputs().size(); j++)
 			{
-				tempEdge = this->modules.at(i).getInputs().at(j)->prev->getTimeFrame().at(0);
-				if (tempEdge == 0)
+				if (this->modules.at(i).getInputs().at(j)->prev == NULL);
+				
+				else if (modules.at(i).getInputs().at(j)->prev->getTimeFrame().size() == 0)
 				{
 					next = false;
 					break;
 				}
 				else
 				{
-					if(tempEdge > edge)
-					edge = tempEdge;
+					tempEdge = this->modules.at(i).getInputs().at(j)->prev->getTimeFrame().at(0);
+					if (tempEdge > edge) 
+					{
+						edge = tempEdge;
+					}
 				}
 			}
 			if (next)
@@ -292,12 +296,63 @@ void TopModule::asapSchedule()
 	}
 }
 
-void TopModule::alapSchedule()
+void TopModule::alapSchedule(int latency)
 {
+	unsigned int i = 0;
+	unsigned int j = 0;
+	unsigned int edge = latency;
+	unsigned int tempEdge;
+	unsigned int mod;
+	bool next;
 
+	for (i = 0; i < this->modules.size(); i++)
+	{
+		if (this->modules.at(i).getTimeFrame().size() == 1)
+		{
+			next = true;
+			for (j = 0; j < this->modules.at(i).getOutputs()->next.size(); j++)
+			{
+				if (this->modules.at(i).getOutputs()->next.at(j) == NULL);
+
+				else if (this->modules.at(i).getOutputs()->next.at(j)->getTimeFrame().size() == 1)
+				{
+					next = false;
+					break;
+				}
+				else
+				{
+					tempEdge = this->modules.at(i).getOutputs()->next.at(j)->getTimeFrame().at(1);
+					if (tempEdge <= edge)
+					{
+						edge = tempEdge;
+						mod = j;
+					}
+				}
+			}
+			if (next)
+			{
+				if (this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "DIV")
+				{
+					this->modules.at(i).setTimeFrame(edge - 3);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge - 3);
+				}
+				else if (this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "MUL")
+				{
+					this->modules.at(i).setTimeFrame(edge - 2);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge - 2);
+				}
+				else
+				{
+					this->modules.at(i).setTimeFrame(edge - 1);
+					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge - 1);
+				}
+				//unscheduled.erase(unscheduled.begin()+(i-1));
+			}
+		}
+	}
 }
 
-void TopModule::calculateTimeFrames()
+void TopModule::calculateTimeFrames(int latency)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
@@ -346,6 +401,39 @@ void TopModule::calculateTimeFrames()
 	{
 		asapSchedule();
 	}
-	
+	for (u = 0; u < this->modules.size(); u++)
+	{
+		cout << this->modules.at(u).getOperation() << " " << this->modules.at(u).getTimeFrame().at(0) << endl;
+	}
+	j = 0;
+	i = 0;
+	u = this->modules.size();
+
+	for (i = 0; i < this->modules.size(); i++)
+	{
+		next = true;
+		for (j = 0; j < this->modules.at(i).getOutputs()->next.size(); j++)
+		{
+			if (this->modules.at(i).getOutputs()->next.at(j) != NULL)
+			{
+				next = false;
+				break;
+			}
+		}
+		if (next)
+		{
+			this->modules.at(i).setTimeFrame(latency);
+			this->modules.at(i).getOutputs()->prev->setTimeFrame(latency);
+			u = u - 1;
+		}
+	}
+	for (u; u > 0; u = u - 1)
+	{
+		alapSchedule(latency);
+	}
+	for (u = 0; u < this->modules.size(); u++)
+	{
+		cout << this->modules.at(u).getOperation() << " " << this->modules.at(u).getTimeFrame().at(1) << endl;
+	}
 }
 
