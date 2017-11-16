@@ -279,7 +279,7 @@ void TopModule::asapSchedule()
 			}
 			if (next)
 			{
-				if (this->modules.at(i).getOperation() == "DIV")
+				if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
 				{
 					this->modules.at(i).setTimeFrame(edge + 3);
 					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge + 3);
@@ -335,7 +335,7 @@ void TopModule::alapSchedule(int latency)
 			}
 			if (next)
 			{
-				if (this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "DIV")
+				if ((this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "DIV") || (this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "MOD"))
 				{
 					this->modules.at(i).setTimeFrame(edge - 3);
 					this->modules.at(i).getOutputs()->prev->setTimeFrame(edge - 3);
@@ -382,7 +382,7 @@ void TopModule::calculateTimeFrames(int latency)
 		}
 		if (next)
 		{
-			if (this->modules.at(i).getOperation() == "DIV")
+			if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
 			{
 				this->modules.at(i).setTimeFrame(3);
 				this->modules.at(i).getOutputs()->prev->setTimeFrame(3);
@@ -439,6 +439,8 @@ void TopModule::calculateTimeFrames(int latency)
 	{
 		cout << this->modules.at(u).getOperation() << " " << this->modules.at(u).getTimeFrame().at(1) << endl;
 	}
+	populateGraph(latency);
+	forceSchedule(latency);
 }
 
 void TopModule::populateGraph(int latency)
@@ -474,6 +476,7 @@ void TopModule::populateGraph(int latency)
 			}
 		}
 	}
+	
 	cout << "Add/Sub Graph" << endl;
 	for (i = 0; i < latency; i++)
 	{
@@ -501,4 +504,86 @@ void TopModule::populateGraph(int latency)
 		cout << i << " " << this->logicGraph.at(i) << endl;
 	}
 	cout << endl;
+	
+	forceSchedule(latency);
+}
+
+void TopModule::selfForce(int currMod)
+{
+	unsigned int i = 0;
+	unsigned int j = 0;
+	float probability;
+	float force = 0;
+	vector<float> *graph = new vector<float>(10);
+	probability = 1/((float)this->modules.at(currMod).getTimeFrame().at(1)-(float)this->modules.at(currMod).getTimeFrame().at(0) + 1);
+	i = this->modules.at(currMod).getTimeFrame().at(0)-1;
+	for (i ; i < this->modules.at(currMod).getTimeFrame().at(1); i++)
+	{
+		for (j = 0; j < addSubGraph.size(); j++)
+		{
+			if (i == j)
+			{
+				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
+				{
+					force = force + divModGraph.at(j)*(1-probability);
+				} 
+				else if ((this->modules.at(currMod).getOperation() == "ADD") || (this->modules.at(currMod).getOperation() == "SUB"))
+				{
+					force = force + addSubGraph.at(j)*(1-probability);
+				}
+				else if (this->modules.at(currMod).getOperation() == "MUL")
+				{
+					force = force + mulGraph.at(j)*(1-probability);
+				}
+				else
+				{
+					force = force + logicGraph.at(j)*(1-probability);
+				}
+			}
+			else
+			{
+				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
+				{
+					force = force + divModGraph.at(j)*(0-probability);
+				} 
+				else if ((this->modules.at(currMod).getOperation() == "ADD") || (this->modules.at(currMod).getOperation() == "SUB"))
+				{
+					force = force + addSubGraph.at(j)*(0-probability);
+				}
+				else if (this->modules.at(currMod).getOperation() == "MUL")
+				{
+					force = force + mulGraph.at(j)*(0-probability);
+				}
+				else
+				{
+					force = force + logicGraph.at(j)*(0-probability);
+				}
+			}
+		}
+	}
+}
+
+void TopModule::forceSchedule(int latency)
+{
+	unsigned int i = 0;
+	unsigned int j = 0;
+	float probability;
+	float force = 0;
+	probability = 1/((float)this->modules.at(0).getTimeFrame().at(1)-(float)this->modules.at(0).getTimeFrame().at(0) + 1);
+	i = this->modules.at(0).getTimeFrame().at(0)-1;
+	for (i ; i < this->modules.at(0).getTimeFrame().at(1); i++)
+	{
+		for (j = 0; j < addSubGraph.size(); j++)
+		{
+			if (i == j)
+			{
+				force = force + addSubGraph.at(j)*(1-probability);
+			}
+			else
+			{
+				force = force + addSubGraph.at(j)*(0-probability);
+			}	
+		}
+	}
+	selfForce(0);
 }

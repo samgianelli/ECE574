@@ -47,4 +47,6 @@ class TopModule {
 		void alapSchedule(int latency);
 		void asapSchedule();
 		void populateGraph(int latency);
+		void forceSchedule(int latency);
+		void selfForce(int currMod);
 };

@@ -67,7 +67,7 @@ int main(/*int argc, char* argv[]*/) // Will add input arguments in at end of pr
 		//temp = &(topModule->modules.at(1));
 		topModule->findCriticalPath();
 		topModule->calculateTimeFrames(latency);
-		topModule->populateGraph(latency);
+		//topModule->populateGraph(latency);
 
 		// Write to the .v file
 		writeToFile(/*argv[2]*/"out.v", topModule);
