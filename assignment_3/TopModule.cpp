@@ -517,9 +517,12 @@ void TopModule::selfForce(int currMod)
 	vector<float> *graph = new vector<float>(10);
 	probability = 1/((float)this->modules.at(currMod).getTimeFrame().at(1)-(float)this->modules.at(currMod).getTimeFrame().at(0) + 1);
 	i = this->modules.at(currMod).getTimeFrame().at(0)-1;
+
+	//need to fix for probability of 0
 	for (i ; i < this->modules.at(currMod).getTimeFrame().at(1); i++)
 	{
-		for (j = 0; j < addSubGraph.size(); j++)
+		j = this->modules.at(currMod).getTimeFrame().at(0)-1;
+		for (j = 0; j < this->modules.at(currMod).getTimeFrame().at(1); j++)
 		{
 			if (i == j)
 			{
@@ -565,25 +568,5 @@ void TopModule::selfForce(int currMod)
 
 void TopModule::forceSchedule(int latency)
 {
-	unsigned int i = 0;
-	unsigned int j = 0;
-	float probability;
-	float force = 0;
-	probability = 1/((float)this->modules.at(0).getTimeFrame().at(1)-(float)this->modules.at(0).getTimeFrame().at(0) + 1);
-	i = this->modules.at(0).getTimeFrame().at(0)-1;
-	for (i ; i < this->modules.at(0).getTimeFrame().at(1); i++)
-	{
-		for (j = 0; j < addSubGraph.size(); j++)
-		{
-			if (i == j)
-			{
-				force = force + addSubGraph.at(j)*(1-probability);
-			}
-			else
-			{
-				force = force + addSubGraph.at(j)*(0-probability);
-			}	
-		}
-	}
 	selfForce(0);
 }
