@@ -480,10 +480,14 @@ void TopModule::populateGraph(int latency)
 	//iterate through all modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
+		//get the reciprocal of timeFrame width
 		probability = 1/((float)this->modules.at(i).getTimeFrame().at(1)-(float)this->modules.at(i).getTimeFrame().at(0) + 1);
+
+		//iterate through the possible time's the module can be scheduled at
 		j = this->modules.at(i).getTimeFrame().at(0)-1;
 		for (j ; j < this->modules.at(i).getTimeFrame().at(1); j++)
 		{
+			//add the probability to the corresponding element in the corresponding graph
 			if ((this->modules.at(i).getOperation() == "ADD") || (this->modules.at(i).getOperation() == "SUB"))
 			{
 				this->addSubGraph.at(j) = this->addSubGraph.at(j) + probability;
@@ -539,17 +543,25 @@ void TopModule::selfForce(int currMod)
 	unsigned int i = 0;
 	unsigned int j = 0;
 	float probability;
-	float force = 0;
-	vector<float> *graph = new vector<float>(10);
-	probability = 1/((float)this->modules.at(currMod).getTimeFrame().at(1)-(float)this->modules.at(currMod).getTimeFrame().at(0) + 1);
-	i = this->modules.at(currMod).getTimeFrame().at(0)-1;
 
-	//need to fix for probability of 0
+	float force = 0;
+	vector<float> selfForces = vector<float>(0);
+	//vector<float> *graph = new vector<float>(10);
+
+	//calculate the reciprocal of the timeframe width
+	probability = 1/((float)this->modules.at(currMod).getTimeFrame().at(1)-(float)this->modules.at(currMod).getTimeFrame().at(0) + 1);
+
+	//iterate though the possible times this node can be scheduled at
+	//in order to get the force assuming it is scheduled at time i
+	i = this->modules.at(currMod).getTimeFrame().at(0)-1;
 	for (i ; i < this->modules.at(currMod).getTimeFrame().at(1); i++)
 	{
+		//iterate through the possibe times this node can be scheduled at
+		//in order to add the forces
 		j = this->modules.at(currMod).getTimeFrame().at(0)-1;
 		for (j = 0; j < this->modules.at(currMod).getTimeFrame().at(1); j++)
 		{
+			//if at assumed time, then this factor will be (distribution at time j)*(1 - probability)
 			if (i == j)
 			{
 				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
@@ -569,6 +581,7 @@ void TopModule::selfForce(int currMod)
 					force = force + logicGraph.at(j)*(1-probability);
 				}
 			}
+			//else this factor will be (distribution at time j)*(0 - probability)
 			else
 			{
 				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
@@ -590,6 +603,8 @@ void TopModule::selfForce(int currMod)
 			}
 		}
 	}
+	//add self force at assumed time i to the vector of self forces
+	selfForces.push_back(force);
 }
 
 void TopModule::forceSchedule(int latency)
