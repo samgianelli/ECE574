@@ -7,7 +7,10 @@ TopModule::TopModule()
 	this->wires = vector<IOWire>(0);
 	this->registers = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
-	this->forceGraph = vector<double>(0);
+	this->addSubGraph = vector<double>(0);
+	this->logicGraph = vector<double>(0);
+	this->mulGraph = vector<double>(0);
+	this->divModGraph = vector<double>(0);
 }
 
 void TopModule::setInputs(vector<IOWire> inputs)
@@ -443,18 +446,59 @@ void TopModule::populateGraph(int latency)
 	unsigned int i = 0;
 	unsigned int j = 0;
 	float probability;
-	this->forceGraph.resize(latency);
+	this->addSubGraph.resize(latency);
+	this->logicGraph.resize(latency);
+	this->mulGraph.resize(latency);
+	this->divModGraph.resize(latency);
 	for (i = 0; i < this->modules.size(); i++)
 	{
 		probability = 1/((float)this->modules.at(i).getTimeFrame().at(1)-(float)this->modules.at(i).getTimeFrame().at(0) + 1);
 		j = this->modules.at(i).getTimeFrame().at(0)-1;
 		for (j ; j < this->modules.at(i).getTimeFrame().at(1); j++)
 		{
-			this->forceGraph.at(j) = this->forceGraph.at(j) + probability;
+			if ((this->modules.at(i).getOperation() == "ADD") || (this->modules.at(i).getOperation() == "SUB"))
+			{
+				this->addSubGraph.at(j) = this->addSubGraph.at(j) + probability;
+			}
+			else if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
+			{
+				this->divModGraph.at(j) = this->divModGraph.at(j) + probability;
+			}
+			else if ((this->modules.at(i).getOperation() == "MUL"))
+			{
+				this->mulGraph.at(j) = this->mulGraph.at(j) + probability;
+			}
+			else
+			{
+				this->logicGraph.at(j) = this->logicGraph.at(j) + probability;
+			}
 		}
 	}
-	for (i = 0; i < this->forceGraph.size(); i++)
+	cout << "Add/Sub Graph" << endl;
+	for (i = 0; i < latency; i++)
 	{
-		cout << "Time Frame" << i << " " << this->forceGraph.at(i) << endl;
+		cout << i << " " << this->addSubGraph.at(i) << endl;
 	}
+	cout << endl;
+
+	cout << "Div/Mod Graph" << endl;
+	for (i = 0; i < latency; i++)
+	{
+		cout << i << " " << this->divModGraph.at(i) << endl;
+	}
+	cout << endl;
+
+	cout << "Mul Graph" << endl;
+	for (i = 0; i < latency; i++)
+	{
+		cout << i << " " << this->mulGraph.at(i) << endl;
+	}
+	cout << endl;
+
+	cout << "logic Graph" << endl;
+	for (i = 0; i < latency; i++)
+	{
+		cout << i << " " << this->logicGraph.at(i) << endl;
+	}
+	cout << endl;
 }

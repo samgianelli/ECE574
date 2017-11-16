@@ -16,7 +16,11 @@ class TopModule {
 		vector<IOWire> outputs;
 		vector<IOWire> wires;
 		vector<IOWire> registers;
-		vector<double>forceGraph;
+		vector<double>addSubGraph;
+		vector<double>logicGraph;
+		vector<double>mulGraph;
+		vector<double>divModGraph;
+
 
 		TopModule();
 
