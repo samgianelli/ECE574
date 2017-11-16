@@ -250,35 +250,44 @@ void TopModule::asapSchedule()
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
-	unsigned int edge = 0;
-	unsigned int tempEdge;
-	bool next;
+	unsigned int edge = 0;	//latest scheduled predecessor module time
+	unsigned int tempEdge;	//current scheduled predecessor module time
+	bool next;				//boolean to determine if module should be scheduled
 
+	//iterate through modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
+		//if the module is not yet scheduled
 		if (this->modules.at(i).getTimeFrame().size() == 0)
 		{
 			next = true;
+			//iterate through inputs of current module
 			for (j = 0; j < this->modules.at(i).getInputs().size(); j++)
 			{
+				//if one of the inputs has no predecessor node do nothing, check next input
 				if (this->modules.at(i).getInputs().at(j)->prev == NULL);
 				
+				//if predecessor node is not yet scheduled, move on to next node
 				else if (modules.at(i).getInputs().at(j)->prev->getTimeFrame().size() == 0)
 				{
 					next = false;
 					break;
 				}
+				//if predecessor node is scheduled
 				else
 				{
 					tempEdge = this->modules.at(i).getInputs().at(j)->prev->getTimeFrame().at(0);
+					//check for the latest scheduled predecessor node
 					if (tempEdge > edge) 
 					{
 						edge = tempEdge;
 					}
 				}
 			}
+			//if all predecessor nodes are scheduled
 			if (next)
 			{
+				//schedules node according to operation and previous node time
 				if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
 				{
 					this->modules.at(i).setTimeFrame(edge + 3);
@@ -304,28 +313,35 @@ void TopModule::alapSchedule(int latency)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
-	unsigned int edge = latency;
-	unsigned int tempEdge;
-	unsigned int mod;
+	unsigned int edge = latency;	//earliest successor node alap time
+	unsigned int tempEdge;			//current successor node alap time
+	unsigned int mod;				//successor node with earliest alap time
 	bool next;
 
+	//iterate through modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
+		//if the current node is not scheduled yet
 		if (this->modules.at(i).getTimeFrame().size() == 1)
 		{
 			next = true;
+			//iterate through the output's successor modules
 			for (j = 0; j < this->modules.at(i).getOutputs()->next.size(); j++)
 			{
+				//if some successor modules do not exist do nothing, check next module
 				if (this->modules.at(i).getOutputs()->next.at(j) == NULL);
 
+				//if a successor module is not scheduled move on to next module
 				else if (this->modules.at(i).getOutputs()->next.at(j)->getTimeFrame().size() == 1)
 				{
 					next = false;
 					break;
 				}
+				//if successor modules scheduled
 				else
 				{
 					tempEdge = this->modules.at(i).getOutputs()->next.at(j)->getTimeFrame().at(1);
+					//check for earliest scheduled successor nodes
 					if (tempEdge <= edge)
 					{
 						edge = tempEdge;
@@ -333,8 +349,10 @@ void TopModule::alapSchedule(int latency)
 					}
 				}
 			}
+			//if all successor nodes are scheduled
 			if (next)
 			{
+				//schedule node according to operation and successor time
 				if ((this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "DIV") || (this->modules.at(i).getOutputs()->next.at(mod)->getOperation() == "MOD"))
 				{
 					this->modules.at(i).setTimeFrame(edge - 3);
@@ -360,28 +378,28 @@ void TopModule::calculateTimeFrames(int latency)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
-	vector<Module> unscheduled;
-	unsigned int u = this->modules.size();
-	bool next;
+	//vector<Module> unscheduled;
+	unsigned int u = this->modules.size();		//Number of unscheduled modules
+	bool next;									//Boolean to check if node is to be scheduled
 
-	for (i = 0; i < this->modules.size(); i++)
-	{
-		unscheduled.push_back(this->modules.at(i));
-	}
-
+	//iterate through modules to schedule initial nodes
 	for (i = 0; i < this->modules.size(); i++)
 	{
 		next = true;
+		//iterate through inputs of a module
 		for (j = 0; j < this->modules.at(i).getInputs().size(); j++)
 		{
+			//if an input has predecessor node, do not schedule
 			if (this->modules.at(i).getInputs().at(j)->prev != NULL)
 			{
 				next = false;
 				break;
 			}
 		}
+		//if all inputs have no predecessor node
 		if (next)
 		{
+			//schedule at timeframes according to resource latency
 			if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
 			{
 				this->modules.at(i).setTimeFrame(3);
@@ -398,9 +416,10 @@ void TopModule::calculateTimeFrames(int latency)
 				this->modules.at(i).getOutputs()->prev->setTimeFrame(1);
 			}
 			//unscheduled.erase(unscheduled.begin()+(i-1));
-			u = u - 1;
+			u = u - 1;	//decrement unscheduled modules
 		}		
 	}
+	//loop until all modules scheduled
 	for (u; u > 0; u = u - 1)
 	{
 		asapSchedule();
@@ -409,21 +428,26 @@ void TopModule::calculateTimeFrames(int latency)
 	{
 		cout << this->modules.at(u).getOperation() << " " << this->modules.at(u).getTimeFrame().at(0) << endl;
 	}
+
 	j = 0;
 	i = 0;
 	u = this->modules.size();
 
+	//iterate through modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
 		next = true;
+		//iterate through the output's successor modules
 		for (j = 0; j < this->modules.at(i).getOutputs()->next.size(); j++)
 		{
+			//check if the output has no sucessor nodes
 			if (this->modules.at(i).getOutputs()->next.at(j) != NULL)
 			{
 				next = false;
 				break;
 			}
 		}
+		//schedule at latest time;
 		if (next)
 		{
 			this->modules.at(i).setTimeFrame(latency);
@@ -448,10 +472,12 @@ void TopModule::populateGraph(int latency)
 	unsigned int i = 0;
 	unsigned int j = 0;
 	float probability;
-	this->addSubGraph.resize(latency);
+	this->addSubGraph.resize(latency);	//make graphs size of latency
 	this->logicGraph.resize(latency);
 	this->mulGraph.resize(latency);
 	this->divModGraph.resize(latency);
+
+	//iterate through all modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
 		probability = 1/((float)this->modules.at(i).getTimeFrame().at(1)-(float)this->modules.at(i).getTimeFrame().at(0) + 1);
