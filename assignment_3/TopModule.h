@@ -16,6 +16,7 @@ class TopModule {
 		vector<IOWire> outputs;
 		vector<IOWire> wires;
 		vector<IOWire> registers;
+		vector<double>forceGraph;
 
 		TopModule();
 
@@ -41,5 +42,5 @@ class TopModule {
 		void calculateTimeFrames(int latency);
 		void alapSchedule(int latency);
 		void asapSchedule();
-
+		void populateGraph(int latency);
 };

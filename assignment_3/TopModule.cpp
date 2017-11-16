@@ -7,6 +7,7 @@ TopModule::TopModule()
 	this->wires = vector<IOWire>(0);
 	this->registers = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
+	this->forceGraph = vector<double>(0);
 }
 
 void TopModule::setInputs(vector<IOWire> inputs)
@@ -437,3 +438,23 @@ void TopModule::calculateTimeFrames(int latency)
 	}
 }
 
+void TopModule::populateGraph(int latency)
+{
+	unsigned int i = 0;
+	unsigned int j = 0;
+	float probability;
+	this->forceGraph.resize(latency);
+	for (i = 0; i < this->modules.size(); i++)
+	{
+		probability = 1/((float)this->modules.at(i).getTimeFrame().at(1)-(float)this->modules.at(i).getTimeFrame().at(0) + 1);
+		j = this->modules.at(i).getTimeFrame().at(0)-1;
+		for (j ; j < this->modules.at(i).getTimeFrame().at(1); j++)
+		{
+			this->forceGraph.at(j) = this->forceGraph.at(j) + probability;
+		}
+	}
+	for (i = 0; i < this->forceGraph.size(); i++)
+	{
+		cout << "Time Frame" << i << " " << this->forceGraph.at(i) << endl;
+	}
+}
