@@ -538,7 +538,7 @@ void TopModule::populateGraph(int latency)
 	forceSchedule(latency);
 }
 
-void TopModule::selfForce(int currMod)
+vector<float> TopModule::selfForce(int currMod, int next, int prev)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
@@ -553,8 +553,8 @@ void TopModule::selfForce(int currMod)
 
 	//iterate though the possible times this node can be scheduled at
 	//in order to get the force assuming it is scheduled at time i
-	i = this->modules.at(currMod).getTimeFrame().at(0)-1;
-	for (i ; i < this->modules.at(currMod).getTimeFrame().at(1); i++)
+	i = next;
+	for (i ; i < prev; i++)
 	{
 		//iterate through the possibe times this node can be scheduled at
 		//in order to add the forces
@@ -602,12 +602,55 @@ void TopModule::selfForce(int currMod)
 				}
 			}
 		}
+		//add self force at assumed time i to the vector of self forces
+		selfForces.push_back(force);
 	}
-	//add self force at assumed time i to the vector of self forces
-	selfForces.push_back(force);
+	return selfForces;
+	
 }
+
+float TopModule::successorForces(int currMod)
+{
+	selfForce(0, 0, 0);
+	return 0;
+}
+
+float TopModule::predecessorForces(int currMod)
+{
+	return 0;
+}
+
 
 void TopModule::forceSchedule(int latency)
 {
-	selfForce(0);
+	unsigned int i = 0;
+	unsigned int j = 0;
+	int module;
+	int tempModule;
+	int time;
+	int tempTime;
+	int tempForce;
+	int minForce =32767;
+	vector<float> force; //= vector<float>(0);
+	for (int i = 0; i < this->modules.size(); i++)
+	{
+		tempForce = 32767;
+		force = selfForce(i, this->modules.at(i).getTimeFrame().at(0) - 1, this->modules.at(i).getTimeFrame().at(1));
+		for (int j = 0; j < force.size(); j++)
+		{
+			force.at(j) = force.at(j) + successorForces(i) + predecessorForces(i);
+			if (force.at(j) < tempForce)
+			{
+				tempForce = force.at(j);
+				tempTime = this->modules.at(i).getTimeFrame().at(0) + j;
+			}
+		}
+		if (tempForce < minForce)
+		{
+			minForce = tempForce;
+			module = i;
+			time = tempTime;
+		}	
+	}
+	
 }
