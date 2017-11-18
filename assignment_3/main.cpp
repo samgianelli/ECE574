@@ -61,12 +61,13 @@ int main(/*int argc, char* argv[]*/) // Will add input arguments in at end of pr
 			}
 		}
 
-		int latency = 4;
+		int latency = 5;
 
 		//Module *temp = new Module();
 		//temp = &(topModule->modules.at(1));
 		topModule->findCriticalPath();
 		topModule->calculateTimeFrames(latency);
+		topModule->forceSchedule(latency);
 		//topModule->populateGraph(latency);
 
 		// Write to the .v file

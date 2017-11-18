@@ -1,4 +1,5 @@
 #include "TopModule.h"
+#include <iostream>
 
 TopModule::TopModule()
 {
@@ -489,21 +490,17 @@ void TopModule::populateGraph(int latency)
 		{
 			//add the probability to the corresponding element in the corresponding graph
 			if ((this->modules.at(i).getOperation() == "ADD") || (this->modules.at(i).getOperation() == "SUB"))
-			{
 				this->addSubGraph.at(j) = this->addSubGraph.at(j) + probability;
-			}
+			
 			else if ((this->modules.at(i).getOperation() == "DIV") || (this->modules.at(i).getOperation() == "MOD"))
-			{
 				this->divModGraph.at(j) = this->divModGraph.at(j) + probability;
-			}
+			
 			else if ((this->modules.at(i).getOperation() == "MUL"))
-			{
 				this->mulGraph.at(j) = this->mulGraph.at(j) + probability;
-			}
+			
 			else
-			{
 				this->logicGraph.at(j) = this->logicGraph.at(j) + probability;
-			}
+			
 		}
 	}
 	
@@ -553,42 +550,37 @@ vector<float> TopModule::selfForce(Module currMod, int next, int prev)
 	probability = 1/((float)currMod.getTimeFrame().at(1)-(float)currMod.getTimeFrame().at(0) + 1);
 
 	if ((currMod.getOperation() == "DIV") || (currMod.getOperation() == "MOD"))
-	{
 		graph = divModGraph;
-	} 
+
 	else if ((currMod.getOperation() == "ADD") || (currMod.getOperation() == "SUB"))
-	{
 		graph = addSubGraph;
-	}
+	
 	else if (currMod.getOperation() == "MUL")
-	{
 		graph = mulGraph;
-	}
+	
 	else
-	{
 		graph = logicGraph;
-	}
+	
 
 	//iterate though the possible times this node can be scheduled at
 	//in order to get the force assuming it is scheduled at time i
 	i = next;
 	for (i ; i < prev; i++)
 	{
+		force = 0;
 		//iterate through the possibe times this node can be scheduled at
 		//in order to add the forces
 		j = currMod.getTimeFrame().at(0)-1;
-		for (j = 0; j < currMod.getTimeFrame().at(1); j++)
+		for (j; j < currMod.getTimeFrame().at(1); j++)
 		{
 			//if at assumed time, then this factor will be (distribution at time j)*(1 - probability)
 			if (i == j)
-			{
 				force = force + graph.at(j)*(1-probability);
-			}
+			
 			//else this factor will be (distribution at time j)*(0 - probability)
 			else
-			{
 				force = force + graph.at(j)*(0-probability);
-			}
+
 		}
 		//add self force at assumed time i to the vector of self forces
 		selfForces.push_back(force);
