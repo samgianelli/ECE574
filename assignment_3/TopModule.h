@@ -50,5 +50,5 @@ class TopModule {
 		void forceSchedule(int latency);
 		vector<float> selfForce(Module currMod, int next, int prev);
 		float successorForces(Module *currMod, int assumedTime);
-		float predecessorForces(Module *currMod);
+		float predecessorForces(Module *currMod, int assumedTime);
 };

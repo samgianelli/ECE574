@@ -592,11 +592,15 @@ vector<float> TopModule::selfForce(Module currMod, int next, int prev)
 float TopModule::successorForces(Module *currMod, int assumedTime)
 {
 	unsigned int i = 0;
-	float succForce = 0;
-	vector<float> tempForce;
+	float succForce = 0;		//sum of successive forces
+	vector<float> tempForce;	//self forces of implicitly scheduled nodes
 
+	//check the current operation in order to check how it is effected
+	//from the previously scheduled operation
 	if (currMod->getOperation() == "DIV" || currMod->getOperation() == "MOD")
 	{
+		//if the assumed time of the previous operation does not effect
+		//when this operation is scheduled
 		if ((assumedTime + 2) < (currMod->getTimeFrame().at(0) - 1))
 			assumedTime = currMod->getTimeFrame().at(0) - 1;
 		else
@@ -617,20 +621,27 @@ float TopModule::successorForces(Module *currMod, int assumedTime)
 			assumedTime = assumedTime + 1;
 	}
 
+	//iterate through successor nodes if there are any
 	for (i = 0; i < currMod->getOutputs()->next.size(); i++)
 	{
+		//if the next isn't null
 		if (currMod->getOutputs()->next.at(i) != NULL)
 			succForce = succForce + successorForces(currMod->getOutputs()->next.at(i), assumedTime);
 	}
-	selfForce(*currMod, assumedTime, currMod->getTimeFrame().at(1));
-	return 0;
+	//calculate the self forces of implicitly shceduled nodes
+	tempForce = selfForce(*currMod, assumedTime, currMod->getTimeFrame().at(1));
+
+	//add up self forces
+	for (i = 0; i < tempForce.size(); i++)
+		succForce = succForce + tempForce.at(i);
+
+	return succForce;
 }
 
-float TopModule::predecessorForces(Module *currMod)
+float TopModule::predecessorForces(Module *currMod, int assumedTime)
 {
 	return 0;
 }
-
 
 void TopModule::forceSchedule(int latency)
 {
@@ -664,8 +675,12 @@ void TopModule::forceSchedule(int latency)
 				if(this->modules.at(i).getOutputs()->next.at(k) != NULL)
 				force.at(j) = force.at(j) + successorForces(this->modules.at(i).getOutputs()->next.at(k), assumedTime); // + predecessorForces(&this->modules.at(i));
 			}
-			//add predecessor and successor forces to the self forces
-			force.at(j) = force.at(j) + successorForces(&this->modules.at(i), latency) + predecessorForces(&this->modules.at(i));
+			for (k = 0; k < this->modules.at(i).getInputs().size(); i++)
+			{
+				//add predecessor and successor forces to the self forces
+				force.at(j) = force.at(j) + predecessorForces(&this->modules.at(i), assumedTime);
+			}
+
 			//if this force is the minimum, update minimum
 			//and update its time
 			if (force.at(j) < tempForce)
@@ -686,6 +701,8 @@ void TopModule::forceSchedule(int latency)
 	//set the time frames to the new scheduled time
 	this->modules.at(module).getTimeFrame().at(0) = time;
 	this->modules.at(module).getTimeFrame().at(1) = time;
-	this->modules.at(module).getTimeFrame().push_back(time);
-
+	this->modules.at(module).setTimeFrame(time);
+	this->modules.at(module).getOutputs()->prev->getTimeFrame().at(0) = time;
+	this->modules.at(module).getOutputs()->prev->getTimeFrame().at(1) = time;
+	this->modules.at(module).getOutputs()->prev->setTimeFrame(time);
 }
