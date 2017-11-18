@@ -602,14 +602,35 @@ float TopModule::successorForces(Module *currMod, int assumedTime)
 	unsigned int i = 0;
 	float succForce = 0;
 	vector<float> tempForce;
+
+	if (currMod->getOperation() == "DIV" || currMod->getOperation() == "MOD")
+	{
+		if ((assumedTime + 2) < (currMod->getTimeFrame().at(0) - 1))
+			assumedTime = currMod->getTimeFrame().at(0) - 1;
+		else
+			assumedTime = assumedTime + 3;
+	}
+	else if (currMod->getOperation() == "MUL")
+	{
+		if((assumedTime + 1) < (currMod->getTimeFrame().at(0) - 1))
+			assumedTime = currMod->getTimeFrame().at(0);
+		else
+			assumedTime = assumedTime + 2;
+	}
+	else
+	{
+		if (assumedTime < (currMod->getTimeFrame().at(0) - 1))
+			assumedTime = currMod->getTimeFrame().at(0) - 1;
+		else
+			assumedTime = assumedTime + 1;
+	}
+
 	for (i = 0; i < currMod->getOutputs()->next.size(); i++)
 	{
 		if (currMod->getOutputs()->next.at(i) != NULL)
-		{
-			succForce = succForce + successorForces(currMod->getOutputs()->next.at(i), 0);
-		}
+			succForce = succForce + successorForces(currMod->getOutputs()->next.at(i), assumedTime);
 	}
-	selfForce(*currMod, 0, 0);
+	selfForce(*currMod, assumedTime, currMod->getTimeFrame().at(1));
 	return 0;
 }
 
