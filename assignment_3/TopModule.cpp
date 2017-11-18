@@ -7,10 +7,10 @@ TopModule::TopModule()
 	this->wires = vector<IOWire>(0);
 	this->registers = vector<IOWire>(0);
 	this->modules = vector<Module>(0);
-	this->addSubGraph = vector<double>(0);
-	this->logicGraph = vector<double>(0);
-	this->mulGraph = vector<double>(0);
-	this->divModGraph = vector<double>(0);
+	this->addSubGraph = vector<float>(0);
+	this->logicGraph = vector<float>(0);
+	this->mulGraph = vector<float>(0);
+	this->divModGraph = vector<float>(0);
 }
 
 void TopModule::setInputs(vector<IOWire> inputs)
@@ -464,7 +464,7 @@ void TopModule::calculateTimeFrames(int latency)
 		cout << this->modules.at(u).getOperation() << " " << this->modules.at(u).getTimeFrame().at(1) << endl;
 	}
 	populateGraph(latency);
-	forceSchedule(latency);
+	//forceSchedule(latency);
 }
 
 void TopModule::populateGraph(int latency)
@@ -538,7 +538,7 @@ void TopModule::populateGraph(int latency)
 	forceSchedule(latency);
 }
 
-vector<float> TopModule::selfForce(int currMod, int next, int prev)
+vector<float> TopModule::selfForce(Module currMod, int next, int prev)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
@@ -546,10 +546,28 @@ vector<float> TopModule::selfForce(int currMod, int next, int prev)
 
 	float force = 0;
 	vector<float> selfForces = vector<float>(0);
-	//vector<float> *graph = new vector<float>(10);
+	vector<float> graph = vector<float>(0);
+
 
 	//calculate the reciprocal of the timeframe width
-	probability = 1/((float)this->modules.at(currMod).getTimeFrame().at(1)-(float)this->modules.at(currMod).getTimeFrame().at(0) + 1);
+	probability = 1/((float)currMod.getTimeFrame().at(1)-(float)currMod.getTimeFrame().at(0) + 1);
+
+	if ((currMod.getOperation() == "DIV") || (currMod.getOperation() == "MOD"))
+	{
+		graph = divModGraph;
+	} 
+	else if ((currMod.getOperation() == "ADD") || (currMod.getOperation() == "SUB"))
+	{
+		graph = addSubGraph;
+	}
+	else if (currMod.getOperation() == "MUL")
+	{
+		graph = mulGraph;
+	}
+	else
+	{
+		graph = logicGraph;
+	}
 
 	//iterate though the possible times this node can be scheduled at
 	//in order to get the force assuming it is scheduled at time i
@@ -558,48 +576,18 @@ vector<float> TopModule::selfForce(int currMod, int next, int prev)
 	{
 		//iterate through the possibe times this node can be scheduled at
 		//in order to add the forces
-		j = this->modules.at(currMod).getTimeFrame().at(0)-1;
-		for (j = 0; j < this->modules.at(currMod).getTimeFrame().at(1); j++)
+		j = currMod.getTimeFrame().at(0)-1;
+		for (j = 0; j < currMod.getTimeFrame().at(1); j++)
 		{
 			//if at assumed time, then this factor will be (distribution at time j)*(1 - probability)
 			if (i == j)
 			{
-				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
-				{
-					force = force + divModGraph.at(j)*(1-probability);
-				} 
-				else if ((this->modules.at(currMod).getOperation() == "ADD") || (this->modules.at(currMod).getOperation() == "SUB"))
-				{
-					force = force + addSubGraph.at(j)*(1-probability);
-				}
-				else if (this->modules.at(currMod).getOperation() == "MUL")
-				{
-					force = force + mulGraph.at(j)*(1-probability);
-				}
-				else
-				{
-					force = force + logicGraph.at(j)*(1-probability);
-				}
+				force = force + graph.at(j)*(1-probability);
 			}
 			//else this factor will be (distribution at time j)*(0 - probability)
 			else
 			{
-				if ((this->modules.at(currMod).getOperation() == "DIV") || (this->modules.at(currMod).getOperation() == "MOD"))
-				{
-					force = force + divModGraph.at(j)*(0-probability);
-				} 
-				else if ((this->modules.at(currMod).getOperation() == "ADD") || (this->modules.at(currMod).getOperation() == "SUB"))
-				{
-					force = force + addSubGraph.at(j)*(0-probability);
-				}
-				else if (this->modules.at(currMod).getOperation() == "MUL")
-				{
-					force = force + mulGraph.at(j)*(0-probability);
-				}
-				else
-				{
-					force = force + logicGraph.at(j)*(0-probability);
-				}
+				force = force + graph.at(j)*(0-probability);
 			}
 		}
 		//add self force at assumed time i to the vector of self forces
@@ -609,13 +597,23 @@ vector<float> TopModule::selfForce(int currMod, int next, int prev)
 	
 }
 
-float TopModule::successorForces(int currMod)
+float TopModule::successorForces(Module *currMod, int assumedTime)
 {
-	selfForce(0, 0, 0);
+	unsigned int i = 0;
+	float succForce = 0;
+	vector<float> tempForce;
+	for (i = 0; i < currMod->getOutputs()->next.size(); i++)
+	{
+		if (currMod->getOutputs()->next.at(i) != NULL)
+		{
+			succForce = succForce + successorForces(currMod->getOutputs()->next.at(i), 0);
+		}
+	}
+	selfForce(*currMod, 0, 0);
 	return 0;
 }
 
-float TopModule::predecessorForces(int currMod)
+float TopModule::predecessorForces(Module *currMod)
 {
 	return 0;
 }
@@ -625,26 +623,46 @@ void TopModule::forceSchedule(int latency)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
-	int module;
+	unsigned int k = 0;
+	unsigned int assumedTime;
+	int module;				//module with lowest force
 	int tempModule;
-	int time;
-	int tempTime;
-	int tempForce;
-	int minForce =32767;
-	vector<float> force; //= vector<float>(0);
+	int time;				//time with lowest force
+	int tempTime;			//current module's time with lowest force
+	int tempForce;			//current module's lowest force
+	int minForce =32767;	//lowest force
+	vector<float> force;	//module's forces
+	
+	//iterate through modules
 	for (int i = 0; i < this->modules.size(); i++)
 	{
+		//calculate self forces for each time in a module
 		tempForce = 32767;
-		force = selfForce(i, this->modules.at(i).getTimeFrame().at(0) - 1, this->modules.at(i).getTimeFrame().at(1));
+		force = selfForce(this->modules.at(i), this->modules.at(i).getTimeFrame().at(0) - 1, this->modules.at(i).getTimeFrame().at(1));
+
+		//iterate thorugh the self forces
 		for (int j = 0; j < force.size(); j++)
 		{
-			force.at(j) = force.at(j) + successorForces(i) + predecessorForces(i);
+			assumedTime = j + this->modules.at(i).getTimeFrame().at(0) - 1;
+			//iterate through the successor nodes
+			for (k = 0; i < this->modules.at(i).getOutputs()->next.size(); i++)
+			{
+				//add predecessor and successor forces to the self forces
+				if(this->modules.at(i).getOutputs()->next.at(k) != NULL)
+				force.at(j) = force.at(j) + successorForces(this->modules.at(i).getOutputs()->next.at(k), assumedTime); // + predecessorForces(&this->modules.at(i));
+			}
+			//add predecessor and successor forces to the self forces
+			force.at(j) = force.at(j) + successorForces(&this->modules.at(i), latency) + predecessorForces(&this->modules.at(i));
+			//if this force is the minimum, update minimum
+			//and update its time
 			if (force.at(j) < tempForce)
 			{
 				tempForce = force.at(j);
 				tempTime = this->modules.at(i).getTimeFrame().at(0) + j;
 			}
 		}
+		//if the min force of the module is less then the current min, 
+		//update min, the module, and the time it is to be scheduled
 		if (tempForce < minForce)
 		{
 			minForce = tempForce;
@@ -652,5 +670,9 @@ void TopModule::forceSchedule(int latency)
 			time = tempTime;
 		}	
 	}
-	
+	//set the time frames to the new scheduled time
+	this->modules.at(module).getTimeFrame().at(0) = time;
+	this->modules.at(module).getTimeFrame().at(1) = time;
+	this->modules.at(module).getTimeFrame().push_back(time);
+
 }

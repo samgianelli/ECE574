@@ -16,10 +16,10 @@ class TopModule {
 		vector<IOWire> outputs;
 		vector<IOWire> wires;
 		vector<IOWire> registers;
-		vector<double>addSubGraph;
-		vector<double>logicGraph;
-		vector<double>mulGraph;
-		vector<double>divModGraph;
+		vector<float>addSubGraph;
+		vector<float>logicGraph;
+		vector<float>mulGraph;
+		vector<float>divModGraph;
 
 
 		TopModule();
@@ -48,7 +48,7 @@ class TopModule {
 		void asapSchedule();
 		void populateGraph(int latency);
 		void forceSchedule(int latency);
-		vector<float> selfForce(int currMod, int next, int prev);
-		float successorForces(int currMod);
-		float predecessorForces(int currMod);
+		vector<float> selfForce(Module currMod, int next, int prev);
+		float successorForces(Module *currMod, int assumedTime);
+		float predecessorForces(Module *currMod);
 };
