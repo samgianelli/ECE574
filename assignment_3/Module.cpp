@@ -176,3 +176,8 @@ void Module::setTimeFrame(int edge)
 {
 	timeFrame.push_back(edge);
 }
+
+void Module::updateTimeFrame(int edge, int element)
+{
+	timeFrame.at(element) = edge;
+}

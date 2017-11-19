@@ -11,7 +11,7 @@ class TopModule {
 	private:
 		float criticalPathDelay;
 	public:
-		vector<Module> modules;
+		vector<Module*> modules;
 		vector<IOWire> inputs;
 		vector<IOWire> outputs;
 		vector<IOWire> wires;
@@ -28,7 +28,7 @@ class TopModule {
 		void setOutputs(vector<IOWire> outputs);
 		void setWires(vector<IOWire> wires);
 		void setRegisters(vector<IOWire> registers);
-		void addModule(Module module);
+		void addModule(Module* module);
 		IOWire* findInputWire(string wireName);
 		IOWire* findOutputWire(string wireName);
 		IOWire* findOutputRegister(string wireName);
