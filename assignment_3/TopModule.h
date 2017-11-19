@@ -49,6 +49,6 @@ class TopModule {
 		void populateGraph(int latency);
 		void forceSchedule(int latency);
 		vector<float> selfForce(Module currMod, int next, int prev);
-		float successorForces(Module *currMod, int assumedTime);
-		float predecessorForces(Module *currMod, int assumedTime);
+		float successorForces(Module *currMod, int assumedTime, string operation);
+		float predecessorForces(Module *currMod, int assumedTime, string operation);
 };
