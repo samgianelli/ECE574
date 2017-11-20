@@ -299,7 +299,7 @@ void TopModule::asapSchedule()
 					this->modules.at(i)->setTimeFrame(edge + 1);
 					
 				//unscheduled.erase(unscheduled.begin()+(i-1));
-				}
+			}
 		}
 	}
 }
@@ -447,7 +447,6 @@ void TopModule::calculateTimeFrames(int latency)
 	{
 		cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(1) << endl;
 	}
-	populateGraph(latency);
 	//forceSchedule(latency);
 }
 
@@ -456,10 +455,11 @@ void TopModule::populateGraph(int latency)
 	unsigned int i = 0;
 	unsigned int j = 0;
 	float probability;
-	this->addSubGraph.resize(latency);	//make graphs size of latency
-	this->logicGraph.resize(latency);
-	this->mulGraph.resize(latency);
-	this->divModGraph.resize(latency);
+	vector<float> aGraph = vector<float>(latency);
+	vector<float> lGraph = vector<float>(latency);
+	vector<float> mGraph = vector<float>(latency);
+	vector<float> dGraph = vector<float>(latency);
+
 
 	//iterate through all modules
 	for (i = 0; i < this->modules.size(); i++)
@@ -473,20 +473,25 @@ void TopModule::populateGraph(int latency)
 		{
 			//add the probability to the corresponding element in the corresponding graph
 			if ((this->modules.at(i)->getOperation() == "ADD") || (this->modules.at(i)->getOperation() == "SUB"))
-				this->addSubGraph.at(j) = this->addSubGraph.at(j) + probability;
+				aGraph.at(j) = aGraph.at(j) + probability;
 			
 			else if ((this->modules.at(i)->getOperation() == "DIV") || (this->modules.at(i)->getOperation() == "MOD"))
-				this->divModGraph.at(j) = this->divModGraph.at(j) + probability;
+				dGraph.at(j) = dGraph.at(j) + probability;
 			
 			else if ((this->modules.at(i)->getOperation() == "MUL"))
-				this->mulGraph.at(j) = this->mulGraph.at(j) + probability;
+				mGraph.at(j) = mGraph.at(j) + probability;
 			
 			else
-				this->logicGraph.at(j) = this->logicGraph.at(j) + probability;
+				lGraph.at(j) = lGraph.at(j) + probability;
 			
 		}
 	}
 	
+	this->addSubGraph = aGraph;	//make graphs size of latency
+	this->logicGraph = lGraph;
+	this->mulGraph = mGraph;
+	this->divModGraph = dGraph;
+
 	cout << "Add/Sub Graph" << endl;
 	for (i = 0; i < latency; i++)
 	{
@@ -515,7 +520,7 @@ void TopModule::populateGraph(int latency)
 	}
 	cout << endl;
 	
-	forceSchedule(latency);
+	
 }
 
 vector<float> TopModule::selfForce(Module currMod, int next, int prev)
@@ -656,7 +661,7 @@ float TopModule::predecessorForces(Module *currMod, int assumedTime, string oper
 	{
 		//if the next isn't null
 		if (currMod->getInputs().at(i)->prev != NULL)
-			predForce = predForce + predecessorForces(currMod->getOutputs()->next.at(i), assumedTime, currMod->getOperation());
+			predForce = predForce + predecessorForces(currMod->getInputs().at(i)->prev, assumedTime, currMod->getOperation());
 	}
 	//calculate the self forces of implicitly shceduled nodes
 	tempForce = selfForce(*currMod, currMod->getTimeFrame().at(0) - 1, assumedTime + 1);
@@ -683,71 +688,54 @@ void TopModule::forceSchedule(int latency)
 	float minForce = 32767;	//lowest force
 	vector<float> force;	//module's forces
 	
+	populateGraph(latency);
 	//iterate through modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
-		//calculate self forces for each time in a module
-		tempForce = 32767;
-		force = selfForce(*this->modules.at(i), this->modules.at(i)->getTimeFrame().at(0) - 1, this->modules.at(i)->getTimeFrame().at(1));
-
-		//iterate thorugh the self forces
-		for (j = 0; j < force.size(); j++)
+		if(this->modules.at(i)->getTimeFrame().size() == 2)
 		{
-			assumedTime = j + this->modules.at(i)->getTimeFrame().at(0) - 1;
-			//iterate through the successor nodes
-			for (k = 0; k < this->modules.at(i)->getOutputs()->next.size(); k++)
-			{
-				//add predecessor and successor forces to the self forces
-				if(this->modules.at(i)->getOutputs()->next.at(k) != NULL)
-					force.at(j) = force.at(j) + successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
-			}
-			for (k = 0; k < this->modules.at(i)->getInputs().size(); k++)
-			{
-				//add predecessor and successor forces to the self forces
-				if(this->modules.at(i)->getInputs().at(k)->prev != NULL)
-					force.at(j) = force.at(j) + predecessorForces(this->modules.at(i)->getInputs().at(k)->prev, assumedTime, this->modules.at(i)->getOperation());
-			}
+			//calculate self forces for each time in a module
+			tempForce = 32767;
+			force = selfForce(*this->modules.at(i), this->modules.at(i)->getTimeFrame().at(0) - 1, this->modules.at(i)->getTimeFrame().at(1));
 
-			//if this force is the minimum, update minimum
-			//and update its time
-			if (force.at(j) < tempForce)
+			//iterate thorugh the self forces
+			for (j = 0; j < force.size(); j++)
 			{
-				tempForce = force.at(j);
-				tempTime = this->modules.at(i)->getTimeFrame().at(0) + j;
+				assumedTime = j + this->modules.at(i)->getTimeFrame().at(0) - 1;
+				//iterate through the successor nodes
+				for (k = 0; k < this->modules.at(i)->getOutputs()->next.size(); k++)
+				{
+					//add predecessor and successor forces to the self forces
+					if(this->modules.at(i)->getOutputs()->next.at(k) != NULL)
+						force.at(j) = force.at(j) + successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
+				}
+				for (k = 0; k < this->modules.at(i)->getInputs().size(); k++)
+				{
+					//add predecessor and successor forces to the self forces
+					if(this->modules.at(i)->getInputs().at(k)->prev != NULL)
+						force.at(j) = force.at(j) + predecessorForces(this->modules.at(i)->getInputs().at(k)->prev, assumedTime, this->modules.at(i)->getOperation());
+				}
+
+				//if this force is the minimum, update minimum
+				//and update its time
+				if (force.at(j) < tempForce)
+				{
+					tempForce = force.at(j);
+					tempTime = this->modules.at(i)->getTimeFrame().at(0) + j;
+				}
+			}
+			//if the min force of the module is less then the current min, 
+			//update min, the module, and the time it is to be scheduled
+			if (tempForce < minForce)
+			{
+				minForce = tempForce;
+				module = i;
+				time = tempTime;
 			}
 		}
-		//if the min force of the module is less then the current min, 
-		//update min, the module, and the time it is to be scheduled
-		if (tempForce < minForce)
-		{
-			minForce = tempForce;
-			module = i;
-			time = tempTime;
-		}	
 	}
 	//set the time frames to the new scheduled time
-	this->modules.at(module)->updateTimeFrame(time, 0);
-	this->modules.at(module)->updateTimeFrame(time, 1);
+	this->modules.at(module)->updateAsap(time);
+	this->modules.at(module)->updateAlap(time);
 	this->modules.at(module)->setTimeFrame(time);
-
-	for (i = 0; i < this->modules.at(module)->getOutputs()->next.size(); i++)
-	{
-		if ((this->modules.at(module)->getOutputs()->next.at(i)->getOperation() == "DIV") || (this->modules.at(module)->getOutputs()->next.at(i)->getOperation() == "MOD"))
-		{
-		//if the assumed time of the previous operation does not effect
-		//when this operation is scheduled
-			if ((time + 2) >= this->modules.at(module)->getOutputs()->next.at(i)->getTimeFrame().at(0))
-				this->modules.at(module)->getOutputs()->next.at(i)->updateTimeFrame(time + 3, 0);
-		}
-		else if (this->modules.at(module)->getOutputs()->next.at(i)->getOperation() == "MUL")
-		{
-			if((time + 1) >= this->modules.at(module)->getOutputs()->next.at(i)->getTimeFrame().at(0))
-				this->modules.at(module)->getOutputs()->next.at(i)->updateTimeFrame(time + 2, 0);
-		}
-		else
-		{
-			if (time >= this->modules.at(module)->getOutputs()->next.at(i)->getTimeFrame().at(0))
-				this->modules.at(module)->getOutputs()->next.at(i)->updateTimeFrame(time + 1, 0);
-		}
-	}
 }

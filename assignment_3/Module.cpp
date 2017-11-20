@@ -177,7 +177,59 @@ void Module::setTimeFrame(int edge)
 	timeFrame.push_back(edge);
 }
 
-void Module::updateTimeFrame(int edge, int element)
+void Module::updateAsap(int edge)
 {
-	timeFrame.at(element) = edge;
+	unsigned int i;
+	timeFrame.at(0) = edge;
+
+	for (i = 0; i < this->getOutputs()->next.size(); i++)
+	{
+		if ((this->getOutputs()->next.at(i)->getOperation() == "DIV") || (this->getOutputs()->next.at(i)->getOperation() == "MOD"))
+		{
+		//if the assumed time of the previous operation does not effect
+		//when this operation is scheduled
+			if ((edge + 2) >= this->getOutputs()->next.at(i)->getTimeFrame().at(0))
+				this->getOutputs()->next.at(i)->updateAsap(edge + 3);
+		}
+		else if (this->getOutputs()->next.at(i)->getOperation() == "MUL")
+		{
+			if((edge + 1) >= this->getOutputs()->next.at(i)->getTimeFrame().at(0))
+				this->getOutputs()->next.at(i)->updateAsap(edge + 2);
+		}
+		else
+		{
+			if (edge >= this->getOutputs()->next.at(i)->getTimeFrame().at(1))
+				this->getOutputs()->next.at(i)->updateAsap(edge + 1);
+		}
+	}
+}
+
+void Module::updateAlap(int edge)
+{
+	unsigned int i;
+	timeFrame.at(1) = edge;
+
+	for (i = 0; i < this->getInputs().size(); i++)
+	{
+		if (this->getInputs().at(i)->prev != NULL)
+		{
+			if ((this->getOperation() == "DIV") || (this->getOperation() == "MOD"))
+			{
+			//if the assumed time of the previous operation does not effect
+			//when this operation is scheduled
+				if ((edge - 2) <= this->getInputs().at(i)->prev->getTimeFrame().at(0))
+					this->getInputs().at(i)->prev->updateAlap(edge - 3);
+			}
+			else if (this->getOperation() == "MUL")
+			{
+				if((edge - 1) <= this->getInputs().at(i)->prev->getTimeFrame().at(0))
+					this->getInputs().at(i)->prev->updateAlap(edge - 2);
+			}
+			else
+			{
+				if (edge <= this->getInputs().at(i)->prev->getTimeFrame().at(1))
+					this->getInputs().at(i)->prev->updateAlap(edge - 1);
+			}
+		}
+	}
 }

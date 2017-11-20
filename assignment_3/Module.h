@@ -35,7 +35,8 @@ class Module
 		int getMaxBitWidth();
 		vector<int> getTimeFrame();
 		void setTimeFrame(int edge);
-		void updateTimeFrame(int edge, int element);
+		void updateAsap(int edge);
+		void updateAlap(int edge);
 		void PrintModule();
 		void PrintModuleStatement(ofstream& circuitFile, int moduleNum);
 		void setOperation(string operation);

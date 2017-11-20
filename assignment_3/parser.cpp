@@ -179,7 +179,7 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 	}
 	if (inputChar3.compare("\0") != 0) 
 	{ 
-		tempInput = topModule.findInputWire(inputChar2);
+		tempInput = topModule.findInputWire(inputChar3);
 		if (tempInput == NULL) {
 			opModule = new Module("ERROR"); // This was easier than messing with what the function returned
 			return opModule;
