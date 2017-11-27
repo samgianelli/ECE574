@@ -5,7 +5,6 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 	istringstream lineStream(line);
 	string identifier;
 	Module *temp = new Module();
-
 	lineStream >> identifier;
 	
 	if (identifier.compare(INPUT) == 0)
@@ -191,7 +190,7 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 	if (outputWire != NULL) {
 		if (operatorChar.compare("\0") == 0) {
 			outputWire = topModule.findOutputWire(outputChar);
-			opModule = new Module("REG", inputWires, outputWire, m["REG"]);
+			opModule = new Module("REG", inputWires, outputWire, m["REG"], operationString);
 			return opModule;
 		}
 		else {
@@ -199,53 +198,53 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 			
 			if (operatorChar.compare(ADD) == 0) {
 				if (inputChar2 == "1") {
-					opModule = new Module("INC", inputWires, outputWire2, m["INC"]);
+					opModule = new Module("INC", inputWires, outputWire2, m["INC"], operationString);
 				}
 				else {
-					opModule = new Module("ADD", inputWires, outputWire2, m["ADD"]);
+					opModule = new Module("ADD", inputWires, outputWire2, m["ADD"], operationString);
 				}
 			}
 			else if (operatorChar.compare(SUB) == 0) {
 				if (inputChar2 == "1") {
-					opModule = new Module("DEC", inputWires, outputWire2, m["DEC"]);
+					opModule = new Module("DEC", inputWires, outputWire2, m["DEC"], operationString);
 				}
 				else {
-					opModule = new Module("SUB", inputWires, outputWire2, m["SUB"]);
+					opModule = new Module("SUB", inputWires, outputWire2, m["SUB"], operationString);
 				}
 			}
 			else if (operatorChar.compare(MUL) == 0) {
-				opModule = new Module("MUL", inputWires, outputWire2, m["MUL"]);
+				opModule = new Module("MUL", inputWires, outputWire2, m["MUL"], operationString);
 			}
 			else if (operatorChar.compare(GT) == 0) {
-				opModule = new Module("GT", inputWires, outputWire2, m["COMP"]);
+				opModule = new Module("GT", inputWires, outputWire2, m["COMP"], operationString);
 			}
 			else if (operatorChar.compare(LT) == 0) {
-				opModule = new Module("LT", inputWires, outputWire2, m["COMP"]);
+				opModule = new Module("LT", inputWires, outputWire2, m["COMP"], operationString);
 			}
 			else if (operatorChar.compare(EQ) == 0) {
-				opModule = new Module("EQ", inputWires, outputWire2, m["COMP"]);
+				opModule = new Module("EQ", inputWires, outputWire2, m["COMP"], operationString);
 			}
 			else if (operatorChar.compare(SEL) == 0) {
-				opModule = new Module("MUX", inputWires, outputWire2, m["MUX"]);
+				opModule = new Module("MUX", inputWires, outputWire2, m["MUX"], operationString);
 			}
 			else if (operatorChar.compare(SHR) == 0) {
-				opModule = new Module("SHR", inputWires, outputWire2, m["SHR"]);
+				opModule = new Module("SHR", inputWires, outputWire2, m["SHR"], operationString);
 			}
 			else if (operatorChar.compare(SHL) == 0) {
-				opModule = new Module("SHL", inputWires, outputWire2, m["SHL"]);
+				opModule = new Module("SHL", inputWires, outputWire2, m["SHL"], operationString);
 			}
 			else if (operatorChar.compare(DIV) == 0) {
-				opModule = new Module("DIV", inputWires, outputWire2, m["DIV"]);
+				opModule = new Module("DIV", inputWires, outputWire2, m["DIV"], operationString);
 			}
 			else if (operatorChar.compare(MOD) == 0) {
-				opModule = new Module("MOD", inputWires, outputWire2, m["MOD"]);
+				opModule = new Module("MOD", inputWires, outputWire2, m["MOD"], operationString);
 			}
 //			outputWire2->setPrev(opModule);
 			topModule.addModule(opModule);
 			outputWire = topModule.findOutputWire(outputChar);
 			vector<IOWire*> temp;
 			temp.push_back(outputWire2);
-			opModule = new Module("REG", temp, outputWire, m["REG"]);
+			opModule = new Module("REG", temp, outputWire, m["REG"], operationString);
 //			outputWire2->addNext(opModule);
 			topModule.addWire(*outputWire2);
 			return opModule;
@@ -259,49 +258,49 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 	}
 	if (operatorChar.compare(ADD) == 0) {
 		if (inputChar2 == "1") {
-			opModule = new Module("INC", inputWires, outputWire, m["INC"]);
+			opModule = new Module("INC", inputWires, outputWire, m["INC"], operationString);
 		}
 		else {
-			opModule = new Module("ADD", inputWires, outputWire, m["ADD"]);
+			opModule = new Module("ADD", inputWires, outputWire, m["ADD"], operationString);
 		}
 	}
 	else if(operatorChar.compare(SUB) == 0) {
 		if (inputChar2 == "1") {
-			opModule = new Module("DEC", inputWires, outputWire, m["DEC"]);
+			opModule = new Module("DEC", inputWires, outputWire, m["DEC"], operationString);
 		}
 		else {
-			opModule = new Module("SUB", inputWires, outputWire, m["SUB"]);
+			opModule = new Module("SUB", inputWires, outputWire, m["SUB"], operationString);
 		}
 	}
 	else if(operatorChar.compare(MUL) == 0) {
-		opModule = new Module("MUL", inputWires, outputWire, m["MUL"]);
+		opModule = new Module("MUL", inputWires, outputWire, m["MUL"], operationString);
 	}
 	else if(operatorChar.compare(GT) == 0) {
-		opModule = new Module("GT", inputWires, outputWire, m["COMP"]);
+		opModule = new Module("GT", inputWires, outputWire, m["COMP"], operationString);
 	}
 	else if(operatorChar.compare(LT) == 0) {
-		opModule = new Module("LT", inputWires, outputWire, m["COMP"]);
+		opModule = new Module("LT", inputWires, outputWire, m["COMP"], operationString);
 	}
 	else if(operatorChar.compare(EQ) == 0) {
-		opModule = new Module("EQ", inputWires, outputWire, m["COMP"]);
+		opModule = new Module("EQ", inputWires, outputWire, m["COMP"], operationString);
 	}
 	else if(operatorChar.compare(SEL) == 0) {
-		opModule = new Module("MUX", inputWires, outputWire, m["MUX"]);
+		opModule = new Module("MUX", inputWires, outputWire, m["MUX"], operationString);
 	}
 	else if(operatorChar.compare(SHR) == 0) {
-		opModule = new Module("SHR", inputWires, outputWire, m["SHR"]);
+		opModule = new Module("SHR", inputWires, outputWire, m["SHR"], operationString);
 	}
 	else if(operatorChar.compare(SHL) == 0) {
-		opModule = new Module("SHL", inputWires, outputWire, m["SHL"]);
+		opModule = new Module("SHL", inputWires, outputWire, m["SHL"], operationString);
 	}
 	else if(operatorChar.compare(DIV) == 0) {
-		opModule = new Module("DIV", inputWires, outputWire, m["DIV"]);
+		opModule = new Module("DIV", inputWires, outputWire, m["DIV"], operationString);
 	}
 	else if(operatorChar.compare(MOD) == 0) {
-		opModule = new Module("MOD", inputWires, outputWire, m["MOD"]);
+		opModule = new Module("MOD", inputWires, outputWire, m["MOD"], operationString);
 	}
 	else if(operatorChar.compare(REG) == 0) {
-		opModule = new Module("REG", inputWires, outputWire, m["REG"]); 
+		opModule = new Module("REG", inputWires, outputWire, m["REG"], operationString);
 	}
 	else {
 		//cout << "** Unrecognized computation **" << endl;

@@ -21,14 +21,16 @@ class Module
 		int maxBitWidth;
 		bool isSigned;
 		vector<int> timeFrame;
+		string operationLine;
 
 	public:
 		Module();
 		Module(string operation);
-		Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency);
+		Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency, string operationLine);
 
 		double calculateDelay(vector<double> latency);
 		string getOperation();
+		string getOperationLine();
 		vector<IOWire*> getInputs();
 		IOWire* getOutputs();
 		double getDelay();

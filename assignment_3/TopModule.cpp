@@ -113,7 +113,6 @@ void TopModule::printInputs(ofstream& circuitFile)
 {
 	unsigned int i = 0;
 
-	circuitFile << "\tinput clk, rst;" << endl;
 	for (i = 0; i < this->inputs.size(); i++)
 	{
 		circuitFile << "\tinput " << this->inputs.at(i).printIOWire() << ";" << endl;
@@ -126,7 +125,7 @@ void TopModule::printOutputs(ofstream& circuitFile)
 
 	for (i = 0; i < this->outputs.size(); i++)
 	{
-		circuitFile << "\toutput " << this->outputs.at(i).printIOWire() << ";" << endl;
+		circuitFile << "\toutput reg " << this->outputs.at(i).printIOWire() << ";" << endl;
 	}
 
 }
@@ -137,7 +136,7 @@ void TopModule::printWires(ofstream& circuitFile)
 
 	for (i = 0; i < this->wires.size(); i++)
 	{
-		circuitFile << "\twire " << this->wires.at(i).printIOWire() << ";" << endl;
+		circuitFile << "\treg " << this->wires.at(i).printIOWire() << ";" << endl;
 	}
 }
 
@@ -161,7 +160,7 @@ void TopModule::printModuleName(ofstream& circuitFile, string CircuitName)
 	if (CircuitName.substr(0, 5) == "474a_" || CircuitName.substr(0, 5) == "574a_") {
 		CircuitName.erase(0, 5);
 	}
-	string inputOutputList = "(clk, rst, ";
+	string inputOutputList = "(Clk, Rst, Start, Done, ";
 	unsigned int i;
 
 	for (i = 0; i < this->inputs.size(); i++)

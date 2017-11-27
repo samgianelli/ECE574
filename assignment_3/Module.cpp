@@ -22,7 +22,7 @@ Module::Module(string operation)
 	this->timeFrame = vector<int>(0);
 }
 
-Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency)
+Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency, string operationLine)
 {
 	//cout << "In module overloaded constructor" << endl;
 	cout << "Creating " << operation << " module" << endl;
@@ -36,6 +36,7 @@ Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<
 	this->output = output;
 	this->isSigned = false;
 	this->timeFrame = vector<int>(0);
+	this->operationLine = operationLine;
 	tempMaxBitWidth = this->output->getBitWidth();
 
 	for (i = 0; i < inputs.size(); i++) // Will set the isUnsigned equal to true of any input or output is unsigned
@@ -83,6 +84,11 @@ double Module::calculateDelay(vector<double> latency) {
 string Module::getOperation()
 {
 	return this->operation;
+}
+
+string Module::getOperationLine()
+{
+	return this->operationLine;
 }
 
 vector<IOWire*> Module::getInputs()
