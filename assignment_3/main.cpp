@@ -24,7 +24,7 @@ int main(/*int argc, char* argv[]*/) // Will add input arguments in at end of pr
 	*/
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
 	vector<string> circuits; //= { argv[1] };
-	circuits.push_back("474a_circuit2.txt");
+	circuits.push_back("474a_circuit1.txt");
 	map<string, vector<double>> m;
 	for (int i = 0; i < 5; i++)
 	{
@@ -61,7 +61,7 @@ int main(/*int argc, char* argv[]*/) // Will add input arguments in at end of pr
 			}
 		}
 
-		int latency = 6;
+		int latency = 4;
 
 		//Module *temp = new Module();
 		//temp = &(topModule->modules.at(1));
@@ -76,6 +76,10 @@ int main(/*int argc, char* argv[]*/) // Will add input arguments in at end of pr
 			}
 		}
 
+		for (int j = 0; j < topModule->modules.size(); j++)
+			{
+				cout << topModule->modules.at(j)->getOperation() << " [" << topModule->modules.at(j)->getTimeFrame().at(0) << ", " <<  topModule->modules.at(j)->getTimeFrame().at(1) << ", " << topModule->modules.at(j)->getTimeFrame().at(2) << "]" << endl;
+			}
 
 		//topModule->forceSchedule(latency);
 		//topModule->populateGraph(latency);

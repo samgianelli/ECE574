@@ -198,7 +198,7 @@ void Module::updateAsap(int edge)
 		}
 		else
 		{
-			if (edge >= this->getOutputs()->next.at(i)->getTimeFrame().at(1))
+			if (edge >= this->getOutputs()->next.at(i)->getTimeFrame().at(0))
 				this->getOutputs()->next.at(i)->updateAsap(edge + 1);
 		}
 	}
@@ -217,12 +217,12 @@ void Module::updateAlap(int edge)
 			{
 			//if the assumed time of the previous operation does not effect
 			//when this operation is scheduled
-				if ((edge - 2) <= this->getInputs().at(i)->prev->getTimeFrame().at(0))
+				if ((edge - 2) <= this->getInputs().at(i)->prev->getTimeFrame().at(1))
 					this->getInputs().at(i)->prev->updateAlap(edge - 3);
 			}
 			else if (this->getOperation() == "MUL")
 			{
-				if((edge - 1) <= this->getInputs().at(i)->prev->getTimeFrame().at(0))
+				if((edge - 1) <= this->getInputs().at(i)->prev->getTimeFrame().at(1))
 					this->getInputs().at(i)->prev->updateAlap(edge - 2);
 			}
 			else

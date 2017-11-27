@@ -692,6 +692,7 @@ void TopModule::forceSchedule(int latency)
 	//iterate through modules
 	for (i = 0; i < this->modules.size(); i++)
 	{
+		//check if already force scheduled
 		if(this->modules.at(i)->getTimeFrame().size() == 2)
 		{
 			//calculate self forces for each time in a module
@@ -708,6 +709,9 @@ void TopModule::forceSchedule(int latency)
 					//add predecessor and successor forces to the self forces
 					if(this->modules.at(i)->getOutputs()->next.at(k) != NULL)
 						force.at(j) = force.at(j) + successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
+
+					cout << endl;
+					cout << successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
 				}
 				for (k = 0; k < this->modules.at(i)->getInputs().size(); k++)
 				{
