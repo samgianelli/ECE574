@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 	*/
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
 	vector<string> circuits; //= { argv[1] };
-	circuits.push_back("474a_circuit1.txt");
+	circuits.push_back("test_if1.c");
 	map<string, vector<double>> m;
 	for (int i = 0; i < 5; i++)
 	{
@@ -55,12 +55,10 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 			return 1;
 		}
 		vector<string> input_output_reg;
-		for (i = 0; i < netlistContents.size(); i++)
-		{
-			if (Parser::parseLine(netlistContents.at(i), topModule, m) == -1) {
-				cout << "Error: Couldn't parse a line. Check the netlist for errors. Exiting." << endl;
-				return 1;
-			}
+
+		if (Parser::parseContent(netlistContents, topModule, m) == -1) {
+			cout << "Error: Couldn't parse a line. Check the netlist for errors. Exiting." << endl;
+			return 1;
 		}
 
 		int latency = 6;

@@ -14,6 +14,9 @@
 #define OUTPUT "output"
 #define WIRE "wire"
 #define REGISTER "register"
+#define VARIABLE "variable"
+#define IF "if"
+#define ELSE "else {"
 #define COMMENT "//"
 #define EMPTY "\0"
 #define ADD "+"
@@ -44,4 +47,6 @@ class Parser
 		static vector<IOWire> parseWire(string wireString);
 		static vector<IOWire> parseRegister(string registerString);
 		static Module* parseOperation(string operationString, TopModule &topModule, map<string, vector<double>> m);
+		static int Parser::parseContent(vector<string> line, TopModule * topModule, map<string, vector<double>> m);
+
 };

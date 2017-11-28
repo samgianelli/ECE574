@@ -19,7 +19,7 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 	{
 		topModule->setWires(Parser::parseWire(line));
 	}
-	else if (identifier.compare(REGISTER) == 0) 
+	else if (identifier.compare(REGISTER) == 0 || identifier.compare(VARIABLE) == 0)
 	{
 		topModule->setRegisters(Parser::parseRegister(line));
 		topModule->setWires(Parser::parseRegister(line));
@@ -42,6 +42,71 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 
 	return 0; // return no error
 }
+
+int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string, vector<double>> m)
+{
+
+	for (int i = 0; i < lines.size(); i++)
+	{
+		istringstream lineStream(lines.at(i));
+		string identifier;
+		vector<string> trueComputations;
+		vector<string> falseComputations;
+		lineStream >> identifier;
+		int numTrueStatements;
+		int numFalseStatements;
+		int j = 0;
+		
+		/*
+		Right now, just creates a vector of computations if true, and a vector of computations if false. Will have to create the operations, and
+		then connect the outputs to the muxes according to the names of the inputs. Will need to then rename the outputs to {var_name}True or {var_name}False
+		and have the output of the mux be {var_name}.
+		*/
+		if (identifier.compare(IF) == 0)
+		{
+			cout << "WE HAVE AN IF" << endl;
+			for (j = i + 1; j < lines.size(); j++) {
+				if (lines.at(j).compare("}") == 0) {
+					cout << "have " << trueComputations.size() << " statements in if" << endl;
+					i = j + 1;
+					break;
+				}
+				else
+				{
+					trueComputations.push_back(lines.at(j));
+				}
+			}
+			if (lines.at(j + 1).compare(ELSE) == 0) {
+				cout << "WE HAVE AN ELSE" << endl;
+				for (j = i + 1; j < lines.size(); j++) {
+					if (lines.at(j).compare("}") == 0) {
+						cout << "have " << falseComputations.size() << " statements in else" << endl;
+						i = j + 1;
+						break;
+					}
+					else
+					{
+						falseComputations.push_back(lines.at(j));
+					}
+				}
+			}
+			else {
+				cout << "WE HAVE NO ELSE" << endl;
+				/*
+				Here, we are going to have get the false inputs of the mux from actual outside of the if_statement. Either before or after.
+				*/
+			}
+		}
+		else {
+			if (Parser::parseLine(lines.at(i), topModule, m) == -1) {
+				return -1;
+			}
+		}
+	}
+
+
+}
+
 
 vector<IOWire> Parser::parseInput(string inputString)
 {
@@ -187,7 +252,7 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 	}
 	
 	outputWire = topModule.findOutputRegister(outputChar);
-	if (outputWire != NULL) {
+	/*if (outputWire != NULL) {
 		if (operatorChar.compare("\0") == 0) {
 			outputWire = topModule.findOutputWire(outputChar);
 			opModule = new Module("REG", inputWires, outputWire, m["REG"], operationString);
@@ -249,7 +314,7 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 			topModule.addWire(*outputWire2);
 			return opModule;
 		}
-	}
+	}*/
 	outputWire = topModule.findOutputWire(outputChar);
 	if (outputWire == NULL) {
 		//cout << "WARNING: OUTPUT OR WIRE NOT IN OUTPUT OF MODULE" << endl;
