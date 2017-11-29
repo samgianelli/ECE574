@@ -91,6 +91,11 @@ string Module::getOperationLine()
 	return this->operationLine;
 }
 
+void Module::setOperationLine(string operationLine)
+{
+	this->operationLine = operationLine;
+}
+
 vector<IOWire*> Module::getInputs()
 {
 	return this->inputs;
@@ -99,6 +104,11 @@ vector<IOWire*> Module::getInputs()
 IOWire* Module::getOutputs()
 {
 	return this->output;
+}
+
+void Module::setOutput(IOWire * output)
+{
+	this->output = output;
 }
 
 double Module::getDelay()

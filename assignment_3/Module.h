@@ -14,6 +14,7 @@ using namespace std;
 class Module
 {
 	private:
+		string operationLine;
 		string operation;
 		vector<IOWire*> inputs;
 		IOWire* output;
@@ -21,7 +22,6 @@ class Module
 		int maxBitWidth;
 		bool isSigned;
 		vector<int> timeFrame;
-		string operationLine;
 
 	public:
 		Module();
@@ -31,8 +31,10 @@ class Module
 		double calculateDelay(vector<double> latency);
 		string getOperation();
 		string getOperationLine();
+		void setOperationLine(string operationLine);
 		vector<IOWire*> getInputs();
 		IOWire* getOutputs();
+		void setOutput(IOWire* output);
 		double getDelay();
 		int getMaxBitWidth();
 		vector<int> getTimeFrame();

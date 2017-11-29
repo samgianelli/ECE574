@@ -203,10 +203,16 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 						cout << "WE FOUND THE MATCH BEFORE FOR " << outputName1 << endl;
 						// Create the True module and wire and the false wire
 						operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True ="); // change operation line so has {var_name}_True
+						cout << lines.at(i) << endl;
 						IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType()); // creating the new wires that will be inputs into the mux
 						IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
 						falseWire->setNext(topModule->findOutputWire(outputName1)->next); // connected the false wire to where the previous wire was, as that wire will now be the output of the mux
 						falseWire->setPrev(topModule->findOutputWire(outputName1)->prev);
+						// Making previous module be connected to false wire
+						topModule->findOutputWire(outputName1)->prev->setOutput(falseWire);
+						string operationLine = topModule->findOutputWire(outputName1)->prev->getOperationLine();
+						operationLine.replace(operationLine.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_False =");
+						topModule->findOutputWire(outputName1)->prev->setOperationLine(operationLine);
 						for (IOWire wire : topModule->wires)
 						{
 							cout << wire.getName() << "\t" << hex << &wire << endl;
