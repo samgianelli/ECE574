@@ -207,10 +207,18 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 						IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
 						falseWire->setNext(topModule->findOutputWire(outputName1)->next); // connected the false wire to where the previous wire was, as that wire will now be the output of the mux
 						falseWire->setPrev(topModule->findOutputWire(outputName1)->prev);
+						for (IOWire wire : topModule->wires)
+						{
+							cout << wire.getName() << "\t" << hex << &wire << endl;
+						}
+						cout << "Capacity: " << topModule->wires.capacity() << endl;
 						topModule->addWire(*falseWire);
 						topModule->addWire(*trueWire);
-
-						// Creating the trueModule, false module is already created as it is before the if statement
+						for (IOWire wire : topModule->wires)
+						{
+							cout << wire.getName() << "\t" << hex << &wire << endl;
+						}
+						cout << "Capacity: " << topModule->wires.capacity() << endl;						// Creating the trueModule, false module is already created as it is before the if statement
 						Module* trueModule = parseOperation(operationLine1.second, *topModule, m);
 						trueWire->setPrev(trueModule);
 						topModule->addModule(trueModule);

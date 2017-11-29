@@ -6,6 +6,7 @@ TopModule::TopModule()
 	this->inputs = vector<IOWire>(0);
 	this->outputs = vector<IOWire>(0);
 	this->wires = vector<IOWire>(0);
+	this->wires.reserve(100);
 	this->registers = vector<IOWire>(0);
 	this->modules = vector<Module*>(0);
 	this->addSubGraph = vector<float>(0);
