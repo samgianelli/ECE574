@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) // Will add input arguments in at end of projec
 	*/
 	//vector<string> circuits = { "474a_circuit1", "474a_circuit2", "474a_circuit3", "474a_circuit4", "474a_circuit5", "574a_circuit6", "574a_circuit7", "574a_circuit8" };
 	vector<string> circuits; //= { argv[1] };
-	circuits.push_back("test_if4.c");
+	circuits.push_back("test_if1.c");
 	map<string, vector<double>> m;
 	for (int i = 0; i < 5; i++)
 	{

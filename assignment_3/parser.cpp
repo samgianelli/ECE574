@@ -75,8 +75,11 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map<string, vector<double>> m)
 {
 	cout << "Called ifFinder " << index << endl;
-	vector<string> trueComputations;
-	vector<string> falseComputations;
+	//vector<string> trueComputations;
+	//vector<string> falseComputations;
+	map<int, string> trueComputations;
+	map<int, string> falseComputations;
+
 	int j;
 	string elseIdentifier = "";
 	stringstream variable(lines.at(index));
@@ -103,7 +106,8 @@ int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map
 		}
 		else
 		{
-			trueComputations.push_back(lines.at(j));
+			//trueComputations.push_back(lines.at(j));
+			trueComputations[j] = lines.at(j);
 			cout << "IF: " << lines.at(j) << endl;
 			// make wires for true
 		}
@@ -128,37 +132,42 @@ int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map
 			}
 			else
 			{
-				falseComputations.push_back(lines.at(j));
+				//falseComputations.push_back(lines.at(j));
+				falseComputations[j] = lines.at(j);
 				cout << "ELSE: " << lines.at(j) << endl;
 			}
 		}
 	}
 	else {
-		cout << "WE HAVE NO ELSE" << endl;
+		cout << "Returning because no else " << j << endl;		
+		//return j - 1;
 		/*
 		Here, we are going to have get the false inputs of the mux from actual outside of the if_statement. Either before or after.
 		*/
 	}
-	cout << "Returning because no else " << j << endl;
+	
 	cout << endl;
 	vector<IOWire*> trueWires;
 	vector<IOWire*> falseWires;
+	bool inBoth = false;
 
 	// See if they have any terms that are in both of them. 
-	for (string operationLine1 : trueComputations) {
-		stringstream inputStream1(operationLine1);
+	for (auto& operationLine1 : trueComputations) {
+		inBoth = false;
+		stringstream inputStream1(operationLine1.second);
 		string outputName1;
 		inputStream1 >> outputName1;
 		IOWire* output1 = topModule->findOutputWire(outputName1);
-		for (string operationLine2 : falseComputations) {
-			stringstream inputStream2(operationLine2);
+		for (auto& operationLine2 : falseComputations) {
+			stringstream inputStream2(operationLine2.second);
 			string outputName2;
 			inputStream2 >> outputName2;
 			IOWire* output2 = topModule->findOutputWire(outputName2);
 			if (outputName1 == outputName2) {
+				inBoth = true;
 				cout << output1->getName() << " "  << output2->getName() << endl;
-				operationLine1.replace(operationLine1.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
-				operationLine2.replace(operationLine2.find(outputName2 + " ="), string(outputName2 + " =").length(), outputName2 + "_False =");
+				operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
+				operationLine2.second.replace(operationLine2.second.find(outputName2 + " ="), string(outputName2 + " =").length(), outputName2 + "_False =");
 
 				// Make new wires and add them to the list of wires
 				IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType());
@@ -167,20 +176,86 @@ int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map
 				topModule->addWire(*falseWire);
 
 				// Make the modules and wire
-				Module* trueModule = parseOperation(operationLine1, *topModule, m);
-				Module* falseModule = parseOperation(operationLine2, *topModule, m);
+				Module* trueModule = parseOperation(operationLine1.second, *topModule, m);
+				Module* falseModule = parseOperation(operationLine2.second, *topModule, m);
 				trueWire->setPrev(trueModule);
 				falseWire->setPrev(falseModule);
+				topModule->addModule(trueModule);
+				topModule->addModule(falseModule);
 
+				// Creating the Mux
 				vector<IOWire*> inputWires = {trueWire, falseWire, topModule->findInputWire(ifVariable)};
 				IOWire* outputWire = topModule->findOutputWire(outputName1);
 				string operationString = outputName1 + " = " + ifVariable + " ? " + outputName1 + "_True" + " : " + outputName1 + "_False";
 				Module* mux = new  Module("MUX", inputWires, outputWire, m["MUX"], operationString);
-
+				topModule->addModule(mux);
+				
 				cout << endl;
 			}
 		}
+		if (!inBoth) {
+			for (int i = 0; i < lines.size(); i++) {
+				stringstream inputStream2(lines.at(i));
+				string outputName2;
+				inputStream2 >> outputName2;
+				IOWire* output2 = topModule->findOutputWire(outputName2);
+				if (outputName1 == outputName2 && i != operationLine1.first) {
+					if (i < operationLine1.first) {
+						cout << "WE FOUND THE MATCH BEFORE FOR " << outputName1 << endl;
+						// Create the True module and wire and the false wire
+						operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
+						IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType());
+						IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
+						falseWire->setNext(topModule->findOutputWire(outputName1)->next);
+						falseWire->setPrev(topModule->findOutputWire(outputName1)->prev);
+						topModule->addWire(*falseWire);
+						topModule->addWire(*trueWire);
+
+						Module* trueModule = parseOperation(operationLine1.second, *topModule, m);
+						trueWire->setPrev(trueModule);
+						topModule->addModule(trueModule);
+						
+						// Creating the mux
+						vector<IOWire*> inputWires = { trueWire, falseWire, topModule->findInputWire(ifVariable) };
+						IOWire* outputWire = topModule->findOutputWire(outputName1);
+						string operationString = outputName1 + " = " + ifVariable + " ? " + outputName1 + "_True" + " : " + outputName1 + "_False";
+						Module* mux = new  Module("MUX", inputWires, outputWire, m["MUX"], operationString);
+						topModule->addModule(mux);
+
+					}
+					else {
+						cout << "WE FOUND THE MATCH AFTER FOR " << outputName1 << endl;
+						// Create the True and False modules and wires
+						operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
+						lines.at(i).replace(lines.at(i).find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
+						
+						IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType());
+						IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
+						topModule->addWire(*trueWire);
+						topModule->addWire(*falseWire);
+
+						Module* trueModule = parseOperation(operationLine1.second, *topModule, m);
+						Module* falseModule = parseOperation(lines.at(i), *topModule, m);
+						trueWire->setPrev(trueModule);
+						falseWire->setPrev(falseModule);
+						topModule->addModule(trueModule);
+						topModule->addModule(falseModule);
+
+						// Creating the Mux
+						vector<IOWire*> inputWires = { trueWire, falseWire, topModule->findInputWire(ifVariable) };
+						IOWire* outputWire = topModule->findOutputWire(outputName1);
+						string operationString = outputName1 + " = " + ifVariable + " ? " + outputName1 + "_True" + " : " + outputName1 + "_False";
+						Module* mux = new  Module("MUX", inputWires, outputWire, m["MUX"], operationString);
+						topModule->addModule(mux);
+						//lines.erase(lines.begin() + i);
+
+					}
+					break;
+				}
+			}
+		}
 	}
+	
 	for (IOWire* trueIOWire : trueWires) {
 		for (IOWire* falseIOWire : falseWires) {
 			if (trueIOWire == falseIOWire) {
@@ -188,7 +263,7 @@ int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map
 			}
 		}
 	}
-	cout << "Done " <<  endl;
+
 	return j;
 }
 
