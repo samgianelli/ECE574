@@ -50,11 +50,7 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 	{
 		istringstream lineStream(lines.at(i));
 		string identifier;
-		vector<string> trueComputations;
-		vector<string> falseComputations;
 		lineStream >> identifier;
-		int numTrueStatements;
-		int numFalseStatements;
 		int j = 0;
 		
 		/*
@@ -64,38 +60,7 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 		*/
 		if (identifier.compare(IF) == 0)
 		{
-			cout << "WE HAVE AN IF" << endl;
-			for (j = i + 1; j < lines.size(); j++) {
-				if (lines.at(j).compare("}") == 0) {
-					cout << "have " << trueComputations.size() << " statements in if" << endl;
-					i = j + 1;
-					break;
-				}
-				else
-				{
-					trueComputations.push_back(lines.at(j));
-				}
-			}
-			if (lines.at(j + 1).compare(ELSE) == 0) {
-				cout << "WE HAVE AN ELSE" << endl;
-				for (j = i + 1; j < lines.size(); j++) {
-					if (lines.at(j).compare("}") == 0) {
-						cout << "have " << falseComputations.size() << " statements in else" << endl;
-						i = j + 1;
-						break;
-					}
-					else
-					{
-						falseComputations.push_back(lines.at(j));
-					}
-				}
-			}
-			else {
-				cout << "WE HAVE NO ELSE" << endl;
-				/*
-				Here, we are going to have get the false inputs of the mux from actual outside of the if_statement. Either before or after.
-				*/
-			}
+			i = ifFinder(i, lines, topModule, m) + 1;
 		}
 		else {
 			if (Parser::parseLine(lines.at(i), topModule, m) == -1) {
@@ -107,6 +72,125 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 
 }
 
+int Parser::ifFinder(int index, vector<string> lines, TopModule * topModule, map<string, vector<double>> m)
+{
+	cout << "Called ifFinder " << index << endl;
+	vector<string> trueComputations;
+	vector<string> falseComputations;
+	int j;
+	string elseIdentifier = "";
+	stringstream variable(lines.at(index));
+	string if_dummy, parenthesis_dummy, ifVariable;
+	variable >> if_dummy >> parenthesis_dummy >> ifVariable;
+	cout << "Variable in if statement is: " << ifVariable << endl;
+	for (j = index + 1; j < lines.size(); j++) {
+		stringstream lineStream2(lines.at(j));
+		string nextIdentifier;
+		lineStream2 >> nextIdentifier;
+		if (nextIdentifier.compare("}") == 0) {
+			cout << "have " << trueComputations.size() << " statements in if" << endl;
+			index = j + 1;
+			stringstream lineStream3(lines.at(index));
+			lineStream3 >> elseIdentifier;
+			break;
+		}
+		else if (nextIdentifier.compare(EMPTY) == 0 || nextIdentifier.substr(0, 2).compare(COMMENT) == 0) {
+			// If it is a empty line or a comment
+			continue;
+		}
+		else if (nextIdentifier.compare(IF) == 0) {
+			j = ifFinder(j, lines, topModule, m);
+		}
+		else
+		{
+			trueComputations.push_back(lines.at(j));
+			cout << "IF: " << lines.at(j) << endl;
+			// make wires for true
+		}
+	}
+	if (elseIdentifier.compare(ELSE) == 0) {
+		cout << "WE HAVE AN ELSE" << endl;
+		for (j = index + 1; j < lines.size(); j++) {
+			stringstream lineStream2(lines.at(j));
+			string nextIdentifier;
+			lineStream2 >> nextIdentifier;
+			if (nextIdentifier.compare("}") == 0) {
+				cout << "have " << falseComputations.size() << " statements in else" << endl;
+				cout << "Returning with else" << j << endl;
+				break;
+			}
+			else if (nextIdentifier.compare(EMPTY) == 0 || nextIdentifier.substr(0, 2).compare(COMMENT) == 0) {
+				// If it is a empty line or a comment
+				continue;
+			}
+			else if (nextIdentifier.compare(IF) == 0) {
+				j = ifFinder(j, lines, topModule, m);
+			}
+			else
+			{
+				falseComputations.push_back(lines.at(j));
+				cout << "ELSE: " << lines.at(j) << endl;
+			}
+		}
+	}
+	else {
+		cout << "WE HAVE NO ELSE" << endl;
+		/*
+		Here, we are going to have get the false inputs of the mux from actual outside of the if_statement. Either before or after.
+		*/
+	}
+	cout << "Returning because no else " << j << endl;
+	cout << endl;
+	vector<IOWire*> trueWires;
+	vector<IOWire*> falseWires;
+
+	// See if they have any terms that are in both of them. 
+	for (string operationLine1 : trueComputations) {
+		stringstream inputStream1(operationLine1);
+		string outputName1;
+		inputStream1 >> outputName1;
+		IOWire* output1 = topModule->findOutputWire(outputName1);
+		for (string operationLine2 : falseComputations) {
+			stringstream inputStream2(operationLine2);
+			string outputName2;
+			inputStream2 >> outputName2;
+			IOWire* output2 = topModule->findOutputWire(outputName2);
+			if (outputName1 == outputName2) {
+				cout << output1->getName() << " "  << output2->getName() << endl;
+				operationLine1.replace(operationLine1.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
+				operationLine2.replace(operationLine2.find(outputName2 + " ="), string(outputName2 + " =").length(), outputName2 + "_False =");
+
+				// Make new wires and add them to the list of wires
+				IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType());
+				IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
+				topModule->addWire(*trueWire);
+				topModule->addWire(*falseWire);
+
+				// Make the modules and wire
+				Module* trueModule = parseOperation(operationLine1, *topModule, m);
+				Module* falseModule = parseOperation(operationLine2, *topModule, m);
+				trueWire->setPrev(trueModule);
+				falseWire->setPrev(falseModule);
+
+				vector<IOWire*> inputWires = {trueWire, falseWire, topModule->findInputWire(ifVariable)};
+				IOWire* outputWire = topModule->findOutputWire(outputName1);
+				string operationString = outputName1 + " = " + ifVariable + " ? " + outputName1 + "_True" + " : " + outputName1 + "_False";
+				Module* mux = new  Module("MUX", inputWires, outputWire, m["MUX"], operationString);
+
+				cout << endl;
+			}
+		}
+	}
+	for (IOWire* trueIOWire : trueWires) {
+		for (IOWire* falseIOWire : falseWires) {
+			if (trueIOWire == falseIOWire) {
+				//Module* newMux = new Module("MUX", inputWires, outputWire, m["MUX"], operationString);
+			}
+		}
+	}
+	cout << "Done " <<  endl;
+	return j;
+}
 
 vector<IOWire> Parser::parseInput(string inputString)
 {

@@ -28,6 +28,7 @@ class IOWire {
 		void setNext(vector<Module*> next);
 		void addNext(Module *next);
 		void setPrev(Module *prev);
+		void setName(string name);
 		string getName();
 		string getType();
 		int getBitWidth();

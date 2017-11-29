@@ -1,5 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <iostream>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -16,7 +18,7 @@
 #define REGISTER "register"
 #define VARIABLE "variable"
 #define IF "if"
-#define ELSE "else {"
+#define ELSE "else"
 #define COMMENT "//"
 #define EMPTY "\0"
 #define ADD "+"
@@ -48,5 +50,6 @@ class Parser
 		static vector<IOWire> parseRegister(string registerString);
 		static Module* parseOperation(string operationString, TopModule &topModule, map<string, vector<double>> m);
 		static int Parser::parseContent(vector<string> line, TopModule * topModule, map<string, vector<double>> m);
+		static int ifFinder(int index, vector<string> lines, TopModule * topModule, map<string, vector<double>> m);
 
 };

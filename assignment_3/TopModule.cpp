@@ -490,7 +490,7 @@ void TopModule::populateGraph(int latency)
 	this->logicGraph = lGraph;
 	this->mulGraph = mGraph;
 	this->divModGraph = dGraph;
-
+	/*
 	cout << "Add/Sub Graph" << endl;
 	for (i = 0; i < latency; i++)
 	{
@@ -518,7 +518,7 @@ void TopModule::populateGraph(int latency)
 		cout << i << " " << this->logicGraph.at(i) << endl;
 	}
 	cout << endl;
-	
+	*/
 	
 }
 

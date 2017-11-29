@@ -43,6 +43,11 @@ void IOWire::setPrev(Module *prev)
 	return;
 }
 
+void IOWire::setName(string name)
+{
+	this->name = name;
+}
+
 void IOWire::setNext(vector<Module*> next)
 {
 	this->next = next;
