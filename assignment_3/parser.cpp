@@ -79,6 +79,7 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 	//vector<string> falseComputations;
 	map<int, string> trueComputations;
 	map<int, string> falseComputations;
+	vector<int> falseSoloComputations; // the line numbers of all the statements in else that are not in the rest of the file.
 
 	int j;
 	string elseIdentifier = "";
@@ -132,28 +133,26 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 			}
 			else
 			{
-				//falseComputations.push_back(lines.at(j));
 				falseComputations[j] = lines.at(j);
+				falseSoloComputations.push_back(j);
 				cout << "ELSE: " << lines.at(j) << endl;
 			}
 		}
 	}
 	else {
-		cout << "NO ELSE" << j << endl;		
-		//return j - 1;
-		/*
-		Here, we are going to have get the false inputs of the mux from actual outside of the if_statement. Either before or after.
-		*/
+		cout << "NO ELSE" << j << endl;
 	}
 	
 	cout << endl;
 	vector<IOWire*> trueWires;
 	vector<IOWire*> falseWires;
-	bool inBoth = false;
+	bool inBoth = false; // boolean stating if a statement is in the if and the else
+	bool inFile = false; // boolean stating if a statement is in the if but nowhere else in the file
 
 	// See if they have any terms that are in both of them. 
 	for (auto& operationLine1 : trueComputations) {
 		inBoth = false;
+		inFile = false;
 		stringstream inputStream1(operationLine1.second);
 		string outputName1;
 		inputStream1 >> outputName1;
@@ -165,6 +164,8 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 			IOWire* output2 = topModule->findOutputWire(outputName2);
 			if (outputName1 == outputName2) {
 				inBoth = true;
+				inFile = true;
+				falseSoloComputations.erase(remove(falseSoloComputations.begin(), falseSoloComputations.end(), operationLine2.first), falseSoloComputations.end()); // Erasing by value from the vector because it was in the file
 				cout << output1->getName() << " "  << output2->getName() << endl;
 				operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
 				operationLine2.second.replace(operationLine2.second.find(outputName2 + " ="), string(outputName2 + " =").length(), outputName2 + "_False =");
@@ -265,18 +266,22 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 						topModule->addModule(mux);
 						lines.erase(lines.begin() + i);
 					}
+					inFile = true;
 					break;
 				}
 			}
 		}
-	}
-	
-	for (IOWire* trueIOWire : trueWires) {
-		for (IOWire* falseIOWire : falseWires) {
-			if (trueIOWire == falseIOWire) {
-				//Module* newMux = new Module("MUX", inputWires, outputWire, m["MUX"], operationString);
-			}
+		if (!inFile) { // if it is in an if but nowhere else in the file
+			Module* trueModule = parseOperation(operationLine1.second, *topModule, m); // just creating the module. no mux necessary
+			topModule->addModule(trueModule);
 		}
+
+	}
+
+	for (int lineNumber : falseSoloComputations) { // will iterate through all the line numbers of statements in an "else" that were not processed.
+		cout << "We have a solo at: " << lineNumber << " " << lines.at(lineNumber) << endl;
+		Module* trueModule = parseOperation(lines.at(lineNumber), *topModule, m); // just creating the module. no mux necessary
+		topModule->addModule(trueModule);
 	}
 
 	return j;

@@ -14,8 +14,8 @@ using namespace std;
 class Module
 {
 	private:
-		string operationLine;
 		string operation;
+		string operationLine;
 		vector<IOWire*> inputs;
 		IOWire* output;
 		double delay;
