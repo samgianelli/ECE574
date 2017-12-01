@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 	if (argc != 4)
 	{
 		cout << "Error, incorrect number of input arguments." << endl << endl;
-		cout << "Usage: hlsyn cFile latency verilogFile" << endl;
+		cout << "Usage:\thlsyn cFile latency verilogFile" << endl;
 		cout << "\tcFile - The path to the netlist you wish to convert." << endl;
 		cout << "\tlatency - How long the graph has to be scheduled." << endl;
 		cout << "\tverilogFile - The path to for the output verilogFile" << endl;
@@ -169,7 +169,14 @@ void makeOutputFile(string circuitName, TopModule *topModule) {
 	for (unsigned int i = 1; i < maxSize - 1; i++) {
 		circuitFile << "\t\telse if (Case == " << i << ") begin" << endl;
 		for (auto module : topModule->modules) {
-			if (i == module->getTimeFrame().at(0)) {
+			// We currently have the time frame of a multi-cycle operation be the time it finishes, so we need to do these checks to print things at the right state
+			if ((i == module->getTimeFrame().at(0) - 2) && (module->getOperation().compare("MOD") == 0 || module->getOperation().compare("DIV") == 0)) {
+				circuitFile << "\t\t\t" << module->getOperationLine() << ";" << endl;
+			}
+			else if ((i == module->getTimeFrame().at(0) - 1) && module->getOperation().compare("MUL") == 0) {
+				circuitFile << "\t\t\t" << module->getOperationLine() << ";" << endl;
+			}
+			else if (i == module->getTimeFrame().at(0) && module->getOperation().compare("MOD") != 0 && module->getOperation().compare("DIV") != 0 && module->getOperation().compare("MUL") != 0) {
 				circuitFile << "\t\t\t" << module->getOperationLine() << ";" << endl;
 			}
 		}
