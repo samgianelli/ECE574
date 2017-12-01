@@ -46,12 +46,11 @@ int Parser::parseLine(string line, TopModule * topModule, map<string, vector<dou
 int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string, vector<double>> m)
 {
 
-	for (int i = 0; i < lines.size(); i++)
+	for (unsigned int i = 0; i < lines.size(); i++)
 	{
 		istringstream lineStream(lines.at(i));
 		string identifier;
 		lineStream >> identifier;
-		int j = 0;
 		
 		/*
 		Right now, just creates a vector of computations if true, and a vector of computations if false. Will have to create the operations, and
@@ -69,7 +68,6 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 		}
 	}
 
-
 }
 
 int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, map<string, vector<double>> m)
@@ -81,7 +79,7 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 	map<int, string> falseComputations;
 	vector<int> falseSoloComputations; // the line numbers of all the statements in else that are not in the rest of the file.
 
-	int j;
+	unsigned int j;
 	string elseIdentifier = "";
 	stringstream variable(lines.at(index));
 	string if_dummy, parenthesis_dummy, ifVariable;
@@ -403,7 +401,6 @@ Module* Parser::parseOperation(string operationString, TopModule &topModule, map
 	vector<string> inputs;
 	std::vector<IOWire*> inputWires;
 	IOWire* outputWire;
-	IOWire* outputWire2;
 	IOWire* tempInput = NULL;
 	std::stringstream ss(operationString);
 	Module *opModule = NULL;

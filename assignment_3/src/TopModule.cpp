@@ -406,10 +406,10 @@ void TopModule::calculateTimeFrames(int latency)
 	{
 		asapSchedule();
 	}
-	cout << "ASAP" << endl;
+	//cout << "ASAP" << endl;
 	for (u = 0; u < this->modules.size(); u++)
 	{
-		cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(0) << endl;
+		//cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(0) << endl;
 	}
 
 	j = 0;
@@ -442,10 +442,10 @@ void TopModule::calculateTimeFrames(int latency)
 		alapSchedule(latency);
 	}
 
-	cout << endl << "ALAP" << endl;
+	//cout << endl << "ALAP" << endl;
 	for (u = 0; u < this->modules.size(); u++)
 	{
-		cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(1) << endl;
+		//cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(1) << endl;
 	}
 	//forceSchedule(latency);
 }
@@ -681,7 +681,6 @@ void TopModule::forceSchedule(int latency)
 	unsigned int k = 0;
 	unsigned int assumedTime;
 	int module;				//module with lowest force
-	int tempModule;
 	int time;				//time with lowest force
 	int tempTime;			//current module's time with lowest force
 	float tempForce;			//current module's lowest force
@@ -710,8 +709,8 @@ void TopModule::forceSchedule(int latency)
 					if(this->modules.at(i)->getOutputs()->next.at(k) != NULL)
 						force.at(j) = force.at(j) + successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
 
-					cout << endl;
-					cout << successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
+					//cout << endl;
+					//cout << successorForces(this->modules.at(i)->getOutputs()->next.at(k), assumedTime, this->modules.at(i)->getOutputs()->next.at(k)->getOperation());
 				}
 				for (k = 0; k < this->modules.at(i)->getInputs().size(); k++)
 				{

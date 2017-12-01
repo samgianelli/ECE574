@@ -49,7 +49,7 @@ class Parser
 		static vector<IOWire> parseWire(string wireString);
 		static vector<IOWire> parseRegister(string registerString);
 		static Module* parseOperation(string operationString, TopModule &topModule, map<string, vector<double>> m);
-		static int Parser::parseContent(vector<string> line, TopModule * topModule, map<string, vector<double>> m);
+		static int parseContent(vector<string> line, TopModule * topModule, map<string, vector<double>> m);
 		static int ifFinder(int index, vector<string>& lines, TopModule * topModule, map<string, vector<double>> m);
 
 };

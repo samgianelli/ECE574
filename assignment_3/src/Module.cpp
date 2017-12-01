@@ -25,7 +25,7 @@ Module::Module(string operation)
 Module::Module(string operation, vector<IOWire*> inputs, IOWire *output, vector<double> latency, string operationLine)
 {
 	//cout << "In module overloaded constructor" << endl;
-	cout << "Creating " << operation << " module" << endl;
+	//cout << "Creating " << operation << " module" << endl;
 	
 	int tempMaxBitWidth = 0;
 	unsigned int i = 0;
