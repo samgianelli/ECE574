@@ -11,33 +11,43 @@ Diego Jimenez - 474a
 Hugo Valdez   - 474a
 
 3) Brief Description
-Our program will generate a graph topography representing the control data flow graph of the netlist. The edges of the 
-graph are instances of the IOWire class, which correspond to an input, output, wire, or register in Verilog. The nodes
-of the graph are instances of the Module class, which correspond to the different components in the netlist. The edges
-keep a reference of the two nodes it is connection, as well as it's bit width, and whether it is signed or unsigned. 
-The nodes keep an instance of what type of module they are, if they are signed or unsigned, the input and output edges,
-the bit width, and the delay of that given module. We first traverse the graph and print the module instances so they 
-will be synthesizable in verilog. Then, we recursively traverse the graph from every possible output to find the maximum 
-delay of the circuit.
+
+program usage: hlsyn cFile latency verilogFile
+	cFile - The path to the netlist you wish to convert
+	latency - How long the graph has to be scheduled
+	verilogFile - The path to for the output verilogFile
+
+Our program generates a graph representing an input netlist file, displaying how all modules and operations relate to
+each other during execution.  Modules/operations are represented as the nodes of the graph and an IOWire class is used
+for edges between operations (the wires within a .v file).
+Once the graph has been created, The operations in the graph are shceduled using Force Directed Scheduling (FDS).
+First, the time frames are calculated for all operations, graphs are generated, then all operations are shceduled given
+the input latency constraint.
+Finally, once the entire graph has been scheduled, the scheduled operations are written to a verilog file (.v) as an
+HLSM.  This file consists of a large switch case statement where each case represents a time in the schedule diagram.
+All generated HLSMs are synthesizable verilog files.
+
+
 
 4) Individual Contributions
 	All group members worked together on debugging, testing, and implementing the functionality of the assignment. Below
 	is the individual contributions of each member:
 	- Sam Gianelli
-		- Graph initialization.
-		- Created initial parser.
-		- Created critical path functionality.
+		- Verified FDS scheduling functionality
+		- If statement parsing and edge cases
+		- Verified output files to function in verilog 
 
 	- Eddie Richter
-		- Error detection.
-		- Module parser.
-		- Printing the output verilog to the console. 
+		- If statement to mux generation in graph
+		- Error Detection for FDS functionality
+		- FDS scheduling (Time Frames)
 
 	- Diego Jimenez
-		- Printing the verilog to a file.
-		- Generating the signed modules.
-		- Signed padding through $signed()
+		- Generating Verilog code for output
+		- If statement parsing
+		- FDS debugging
 
 	- Hugo Valdez
-		- Register equal to computation functionality.
-		- Signed and unsigned module creation.
+		- Constructed framework for FDS Scheduling (Graph generation)
+		- If statement edge case verification
+		- Error detection for parser and If statements
