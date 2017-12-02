@@ -10,7 +10,7 @@ Sam Gianelli  - 574a
 Diego Jimenez - 474a
 Hugo Valdez   - 474a
 
-3) Brief Description
+3) Brief Description - Early Submission
 
 program usage: hlsyn cFile latency verilogFile
 	cFile - The path to the netlist you wish to convert
@@ -23,6 +23,9 @@ for edges between operations (the wires within a .v file).
 Once the graph has been created, The operations in the graph are shceduled using Force Directed Scheduling (FDS).
 First, the time frames are calculated for all operations, graphs are generated, then all operations are shceduled given
 the input latency constraint.
+Our program also interprets if statements as additional muxes to schedule during execution of the input netlist.
+This is beneficial because during scheduling, only a single force graph needs to be generated instead of multiple graphs
+for all possible outcomes.
 Finally, once the entire graph has been scheduled, the scheduled operations are written to a verilog file (.v) as an
 HLSM.  This file consists of a large switch case statement where each case represents a time in the schedule diagram.
 All generated HLSMs are synthesizable verilog files.
@@ -32,6 +35,7 @@ All generated HLSMs are synthesizable verilog files.
 4) Individual Contributions
 	All group members worked together on debugging, testing, and implementing the functionality of the assignment. Below
 	is the individual contributions of each member:
+
 	- Sam Gianelli
 		- Verified FDS scheduling functionality
 		- If statement parsing and edge cases
