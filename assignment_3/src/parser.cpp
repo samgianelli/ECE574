@@ -59,7 +59,7 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 		*/
 		if (identifier.compare(IF) == 0)
 		{
-			i = ifFinder(i, lines, topModule, m) + 1;
+			i = ifFinder(i, lines, topModule, m);
 		}
 		else {
 			if (Parser::parseLine(lines.at(i), topModule, m) == -1) {
@@ -72,7 +72,6 @@ int Parser::parseContent(vector<string> lines, TopModule * topModule, map<string
 
 int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, map<string, vector<double>> m)
 {
-	cout << "Called ifFinder " << index << endl;
 	//vector<string> trueComputations;
 	//vector<string> falseComputations;
 	map<int, string> trueComputations;
@@ -84,16 +83,20 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 	stringstream variable(lines.at(index));
 	string if_dummy, parenthesis_dummy, ifVariable;
 	variable >> if_dummy >> parenthesis_dummy >> ifVariable;
-	cout << "Variable in if statement is: " << ifVariable << endl;
 	for (j = index + 1; j < lines.size(); j++) {
 		stringstream lineStream2(lines.at(j));
 		string nextIdentifier;
 		lineStream2 >> nextIdentifier;
 		if (nextIdentifier.compare("}") == 0) {
-			cout << "have " << trueComputations.size() << " statements in if" << endl;
 			index = j + 1;
-			stringstream lineStream3(lines.at(index));
-			lineStream3 >> elseIdentifier;
+			if (lines.size() > index) {
+				stringstream lineStream3(lines.at(index));
+				lineStream3 >> elseIdentifier;
+			}
+			else {
+				stringstream lineStream3(" ");
+				lineStream3 >> elseIdentifier;
+			}
 			break;
 		}
 		else if (nextIdentifier.compare(EMPTY) == 0 || nextIdentifier.substr(0, 2).compare(COMMENT) == 0) {
@@ -107,19 +110,15 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 		{
 			//trueComputations.push_back(lines.at(j));
 			trueComputations[j] = lines.at(j);
-			cout << "IF: " << lines.at(j) << endl;
 			// make wires for true
 		}
 	}
 	if (elseIdentifier.compare(ELSE) == 0) {
-		cout << "WE HAVE AN ELSE" << endl;
 		for (j = index + 1; j < lines.size(); j++) {
 			stringstream lineStream2(lines.at(j));
 			string nextIdentifier;
 			lineStream2 >> nextIdentifier;
 			if (nextIdentifier.compare("}") == 0) {
-				cout << "have " << falseComputations.size() << " statements in else" << endl;
-				cout << "Returning with else" << j << endl;
 				break;
 			}
 			else if (nextIdentifier.compare(EMPTY) == 0 || nextIdentifier.substr(0, 2).compare(COMMENT) == 0) {
@@ -133,15 +132,10 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 			{
 				falseComputations[j] = lines.at(j);
 				falseSoloComputations.push_back(j);
-				cout << "ELSE: " << lines.at(j) << endl;
 			}
 		}
 	}
-	else {
-		cout << "NO ELSE" << j << endl;
-	}
-	
-	cout << endl;
+
 	vector<IOWire*> trueWires;
 	vector<IOWire*> falseWires;
 	bool inBoth = false; // boolean stating if a statement is in the if and the else
@@ -164,7 +158,6 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 				inBoth = true;
 				inFile = true;
 				falseSoloComputations.erase(remove(falseSoloComputations.begin(), falseSoloComputations.end(), operationLine2.first), falseSoloComputations.end()); // Erasing by value from the vector because it was in the file
-				cout << output1->getName() << " "  << output2->getName() << endl;
 				operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
 				operationLine2.second.replace(operationLine2.second.find(outputName2 + " ="), string(outputName2 + " =").length(), outputName2 + "_False =");
 
@@ -188,7 +181,6 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 				string operationString = outputName1 + " = " + ifVariable + " ? " + outputName1 + "_True" + " : " + outputName1 + "_False";
 				Module* mux = new  Module("MUX", inputWires, outputWire, m["MUX"], operationString);
 				topModule->addModule(mux);
-				cout << endl;
 			}
 		}
 		if (!inBoth) {
@@ -199,10 +191,8 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 				IOWire* output2 = topModule->findOutputWire(outputName2);
 				if (outputName1 == outputName2 && i != operationLine1.first) {
 					if (i < operationLine1.first) { // Will go in here if the matching statement is before the if statement
-						cout << "WE FOUND THE MATCH BEFORE FOR " << outputName1 << endl;
 						// Create the True module and wire and the false wire
 						operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True ="); // change operation line so has {var_name}_True
-						cout << lines.at(i) << endl;
 						IOWire* trueWire = new IOWire(outputName1 + "_True", output1->getType()); // creating the new wires that will be inputs into the mux
 						IOWire* falseWire = new IOWire(outputName1 + "_False", output2->getType());
 						falseWire->setNext(topModule->findOutputWire(outputName1)->next); // connected the false wire to where the previous wire was, as that wire will now be the output of the mux
@@ -212,18 +202,8 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 						string operationLine = topModule->findOutputWire(outputName1)->prev->getOperationLine();
 						operationLine.replace(operationLine.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_False =");
 						topModule->findOutputWire(outputName1)->prev->setOperationLine(operationLine);
-						for (IOWire wire : topModule->wires)
-						{
-							cout << wire.getName() << "\t" << hex << &wire << endl;
-						}
-						cout << "Capacity: " << topModule->wires.capacity() << endl;
 						topModule->addWire(*falseWire);
 						topModule->addWire(*trueWire);
-						for (IOWire wire : topModule->wires)
-						{
-							cout << wire.getName() << "\t" << hex << &wire << endl;
-						}
-						cout << "Capacity: " << topModule->wires.capacity() << endl;						// Creating the trueModule, false module is already created as it is before the if statement
 						Module* trueModule = parseOperation(operationLine1.second, *topModule, m);
 						trueWire->setPrev(trueModule);
 						topModule->addModule(trueModule);
@@ -237,7 +217,6 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 
 					}
 					else { // Will go in here if the matching statement is after the if statement
-						cout << "WE FOUND THE MATCH AFTER FOR " << outputName1 << endl;
 						// Create the True and False modules and wires
 						operationLine1.second.replace(operationLine1.second.find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_True =");
 						lines.at(i).replace(lines.at(i).find(outputName1 + " ="), string(outputName1 + " =").length(), outputName1 + "_False =");
@@ -277,7 +256,6 @@ int Parser::ifFinder(int index, vector<string>& lines, TopModule * topModule, ma
 	}
 
 	for (int lineNumber : falseSoloComputations) { // will iterate through all the line numbers of statements in an "else" that were not processed.
-		cout << "We have a solo at: " << lineNumber << " " << lines.at(lineNumber) << endl;
 		Module* trueModule = parseOperation(lines.at(lineNumber), *topModule, m); // just creating the module. no mux necessary
 		topModule->addModule(trueModule);
 	}
