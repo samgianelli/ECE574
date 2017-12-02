@@ -43,7 +43,7 @@ class TopModule {
 
 		double findInputDelay(Module module);
 		void findCriticalPath();
-		void calculateTimeFrames(int latency);
+		int calculateTimeFrames(int latency);
 		void alapSchedule(int latency);
 		void asapSchedule();
 		void populateGraph(int latency);

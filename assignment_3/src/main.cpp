@@ -73,8 +73,15 @@ int main(int argc, char* argv[])
 
 		//Module *temp = new Module();
 		//temp = &(topModule->modules.at(1));
+		int minLatency = 0;
+
 		topModule->findCriticalPath();
-		topModule->calculateTimeFrames(latency);
+		minLatency = topModule->calculateTimeFrames(latency);
+		if (minLatency != 0)
+		{
+			cout << "Error: Latency entered is too small for the netlist. Please enter a value of " << minLatency << " or higher. Exiting." << endl;
+			return 0;
+		}
 		for (i = 0; i < topModule->modules.size(); i++)
 		{
 			topModule->forceSchedule(latency);

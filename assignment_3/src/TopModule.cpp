@@ -362,10 +362,11 @@ void TopModule::alapSchedule(int latency)
 	}
 }
 
-void TopModule::calculateTimeFrames(int latency)
+int TopModule::calculateTimeFrames(int latency)
 {
 	unsigned int i = 0;
 	unsigned int j = 0;
+	unsigned int minLatency;
 	//vector<Module> unscheduled;
 	unsigned int u = this->modules.size();		//Number of unscheduled modules
 	bool next;									//Boolean to check if node is to be scheduled
@@ -407,10 +408,17 @@ void TopModule::calculateTimeFrames(int latency)
 		asapSchedule();
 	}
 	//cout << "ASAP" << endl;
+	minLatency = 0;
 	for (u = 0; u < this->modules.size(); u++)
 	{
-		//cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(0) << endl;
+		if (this->modules.at(u)->getTimeFrame().at(0) > minLatency)
+		{
+			minLatency = this->modules.at(u)->getTimeFrame().at(0);
+		}
 	}
+
+	if (minLatency > latency)
+		return minLatency;
 
 	j = 0;
 	i = 0;
@@ -447,6 +455,7 @@ void TopModule::calculateTimeFrames(int latency)
 	{
 		//cout << this->modules.at(u)->getOperation() << " " << this->modules.at(u)->getTimeFrame().at(1) << endl;
 	}
+	return 0;
 	//forceSchedule(latency);
 }
 
